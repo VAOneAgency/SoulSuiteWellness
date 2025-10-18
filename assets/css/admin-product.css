@@ -1,0 +1,136 @@
+/* Product Admin Styles */
+.soul-product-fields {
+    margin: 1em 0;
+}
+
+.soul-field-group {
+    margin-bottom: 2em;
+    padding: 1.5em;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
+}
+
+.soul-section-title {
+    margin-top: 0;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #eee;
+}
+
+.soul-field-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px;
+}
+
+.soul-field-col {
+    flex: 1;
+    min-width: 200px;
+    margin: 0 10px 20px;
+}
+
+.soul-field-col label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.soul-field-col input[type="text"],
+.soul-field-col input[type="number"],
+.soul-field-col input[type="url"],
+.soul-field-col select,
+.soul-field-col textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
+}
+
+.soul-field-col input[type="number"] {
+    max-width: 100px;
+}
+
+.soul-field-col textarea {
+    min-height: 60px;
+}
+
+/* Gallery Styles */
+.soul-gallery-images {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -5px 10px;
+    padding: 0;
+    list-style: none;
+}
+
+.soul-gallery-images li {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 5px 10px;
+    background: #f7f7f7;
+    border: 1px solid #d5d5d5;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.soul-gallery-images li img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.soul-gallery-images li .delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    text-align: center;
+    line-height: 20px;
+    text-decoration: none;
+    font-size: 16px;
+    display: none;
+}
+
+.soul-gallery-images li:hover .delete {
+    display: block;
+}
+
+/* Stock status indicators */
+mark.instock {
+    background: #c6e1c6;
+    color: #5b841b;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+mark.outofstock {
+    background: #f8dda7;
+    color: #94660c;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+mark.onbackorder {
+    background: #e0e0e0;
+    color: #666;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 782px) {
+    .soul-field-col {
+        flex: 0 0 100%;
+        margin-right: 0;
+    }
+    
+    .soul-field-col input[type="number"] {
+        max-width: 100%;
+    }
+}
