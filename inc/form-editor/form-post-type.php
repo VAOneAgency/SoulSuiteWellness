@@ -1,4 +1,43 @@
-// (Removed: Soulara Form Builder CPT code. Migrated to Soul Suite Form Builder system.)
+<?php
+/**
+ * Soulara Form Builder - Custom Post Type
+ * 
+ * Registers a custom post type for managing intake forms
+ */
+
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Register the Form custom post type
+ */
+function soulara_register_form_post_type() {
+    $labels = array(
+        'name'                  => _x('Intake Forms', 'Post type general name', 'monalisa'),
+        'singular_name'         => _x('Intake Form', 'Post type singular name', 'monalisa'),
+        'menu_name'             => _x('Intake Forms', 'Admin Menu text', 'monalisa'),
+        'name_admin_bar'        => _x('Intake Form', 'Add New on Toolbar', 'monalisa'),
+        'add_new'               => __('Add New', 'monalisa'),
+        'add_new_item'          => __('Add New Form', 'monalisa'),
+        'new_item'              => __('New Form', 'monalisa'),
+        'edit_item'             => __('Edit Form', 'monalisa'),
+        'view_item'             => __('View Form', 'monalisa'),
+        'all_items'             => __('All Forms', 'monalisa'),
+        'search_items'          => __('Search Forms', 'monalisa'),
+        'not_found'             => __('No forms found.', 'monalisa'),
+        'not_found_in_trash'    => __('No forms found in Trash.', 'monalisa'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => false,
+        'publicly_queryable' => false,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => false,
         'capability_type'    => 'post',
         'has_archive'        => false,
         'hierarchical'       => false,

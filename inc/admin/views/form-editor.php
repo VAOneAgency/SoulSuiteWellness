@@ -1,5 +1,6 @@
 <div class="wrap soul-suite-admin soul-suite-form-editor">
     <h1><?php echo $form ? __('Edit Form', 'soul-suite') : __('Create New Form', 'soul-suite'); ?></h1>
+    
     <div class="soul-suite-editor-container">
         <div class="soul-suite-editor-sidebar">
             <div class="soul-suite-panel">
@@ -14,23 +15,52 @@
                     <p class="description"><?php _e('Used in shortcode: [soul_suite_form slug="your-slug"]', 'soul-suite'); ?></p>
                 </div>
             </div>
+            
             <div class="soul-suite-panel">
                 <h3><?php _e('Field Types', 'soul-suite'); ?></h3>
                 <div class="field-types">
-                    <button class="add-field-btn" data-field-type="text"><span class="dashicons dashicons-edit"></span><?php _e('Text Input', 'soul-suite'); ?></button>
-                    <button class="add-field-btn" data-field-type="email"><span class="dashicons dashicons-email"></span><?php _e('Email', 'soul-suite'); ?></button>
-                    <button class="add-field-btn" data-field-type="tel"><span class="dashicons dashicons-phone"></span><?php _e('Phone', 'soul-suite'); ?></button>
-                    <button class="add-field-btn" data-field-type="textarea"><span class="dashicons dashicons-text"></span><?php _e('Textarea', 'soul-suite'); ?></button>
-                    <button class="add-field-btn" data-field-type="select"><span class="dashicons dashicons-menu"></span><?php _e('Dropdown', 'soul-suite'); ?></button>
-                    <button class="add-field-btn" data-field-type="radio"><span class="dashicons dashicons-marker"></span><?php _e('Radio', 'soul-suite'); ?></button>
-                    <button class="add-field-btn" data-field-type="checkbox"><span class="dashicons dashicons-yes"></span><?php _e('Checkbox', 'soul-suite'); ?></button>
-                    <button class="add-field-btn" data-field-type="hidden"><span class="dashicons dashicons-hidden"></span><?php _e('Hidden', 'soul-suite'); ?></button>
+                    <button class="add-field-btn" data-field-type="text">
+                        <span class="dashicons dashicons-edit"></span>
+                        <?php _e('Text Input', 'soul-suite'); ?>
+                    </button>
+                    <button class="add-field-btn" data-field-type="email">
+                        <span class="dashicons dashicons-email"></span>
+                        <?php _e('Email', 'soul-suite'); ?>
+                    </button>
+                    <button class="add-field-btn" data-field-type="tel">
+                        <span class="dashicons dashicons-phone"></span>
+                        <?php _e('Phone', 'soul-suite'); ?>
+                    </button>
+                    <button class="add-field-btn" data-field-type="textarea">
+                        <span class="dashicons dashicons-text"></span>
+                        <?php _e('Textarea', 'soul-suite'); ?>
+                    </button>
+                    <button class="add-field-btn" data-field-type="select">
+                        <span class="dashicons dashicons-menu"></span>
+                        <?php _e('Dropdown', 'soul-suite'); ?>
+                    </button>
+                    <button class="add-field-btn" data-field-type="radio">
+                        <span class="dashicons dashicons-marker"></span>
+                        <?php _e('Radio', 'soul-suite'); ?>
+                    </button>
+                    <button class="add-field-btn" data-field-type="checkbox">
+                        <span class="dashicons dashicons-yes"></span>
+                        <?php _e('Checkbox', 'soul-suite'); ?>
+                    </button>
+                    <button class="add-field-btn" data-field-type="hidden">
+                        <span class="dashicons dashicons-hidden"></span>
+                        <?php _e('Hidden', 'soul-suite'); ?>
+                    </button>
                 </div>
             </div>
+            
             <div class="soul-suite-panel">
                 <h3><?php _e('Form Actions', 'soul-suite'); ?></h3>
                 <div class="form-group">
-                    <label><input type="checkbox" id="send-email" checked><?php _e('Send email notification', 'soul-suite'); ?></label>
+                    <label>
+                        <input type="checkbox" id="send-email" checked>
+                        <?php _e('Send email notification', 'soul-suite'); ?>
+                    </label>
                 </div>
                 <div class="form-group" id="email-settings">
                     <label for="email-to"><?php _e('Send to', 'soul-suite'); ?></label>
@@ -46,6 +76,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="soul-suite-editor-main">
             <div class="soul-suite-form-preview">
                 <h2><?php _e('Form Preview', 'soul-suite'); ?></h2>
@@ -65,6 +96,7 @@
             </div>
         </div>
     </div>
+    
     <div class="soul-suite-editor-footer">
         <button type="button" id="save-form-btn" class="button button-primary button-large">
             <?php _e('Save Form', 'soul-suite'); ?>
@@ -74,7 +106,9 @@
         </a>
     </div>
 </div>
+
 <input type="hidden" id="form-id" value="<?php echo $form ? $form->id : 0; ?>">
+
 <!-- Field Edit Modal -->
 <div id="field-edit-modal" class="soul-suite-modal" style="display: none;">
     <div class="soul-suite-modal-content">
@@ -97,7 +131,10 @@
                 <input type="text" id="field-placeholder" class="widefat">
             </div>
             <div class="form-group">
-                <label><input type="checkbox" id="field-required"><?php _e('Required field', 'soul-suite'); ?></label>
+                <label>
+                    <input type="checkbox" id="field-required">
+                    <?php _e('Required field', 'soul-suite'); ?>
+                </label>
             </div>
             <div class="form-group" id="field-options-group" style="display: none;">
                 <label><?php _e('Options (one per line)', 'soul-suite'); ?></label>
@@ -115,6 +152,7 @@
         </div>
     </div>
 </div>
+
 <script type="text/template" id="field-template">
     <div class="form-field-item" data-field-index="{{index}}">
         <div class="field-header">

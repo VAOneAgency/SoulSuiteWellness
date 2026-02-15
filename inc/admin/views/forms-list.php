@@ -81,14 +81,18 @@ jQuery(document).ready(function($) {
             alert('Shortcode copied to clipboard!');
         });
     });
+    
     // Delete form
     $('.delete-form').on('click', function(e) {
         e.preventDefault();
+        
         if (!confirm('Are you sure you want to delete this form? This action cannot be undone.')) {
             return;
         }
+        
         var formId = $(this).data('form-id');
         var $button = $(this);
+        
         $.ajax({
             url: soulSuiteAdmin.ajaxUrl,
             type: 'POST',

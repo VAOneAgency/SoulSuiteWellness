@@ -170,46 +170,46 @@ function soul_suite_404_banner(){
 		
 <?php }
 
-function monalisa_header(){ 
-global $monalisa;
+function soul_suite_header(){ 
+global $soul_suite;
 
-$monalisa_spinner_text = '';	
-$monalisa_preloader_opt = '';	
-$monalisa_homepage_opt = '';	
+$soul_suite_spinner_text = ''; 
+$soul_suite_preloader_opt = ''; 
+$soul_suite_homepage_opt = ''; 
 
-if ( isset( $monalisa['monalisa_spinner_text']) ) {
-	$monalisa_spinner_text = $monalisa['monalisa_spinner_text'];
+if ( isset( $soul_suite['soul_suite_spinner_text']) ) {
+	$soul_suite_spinner_text = $soul_suite['soul_suite_spinner_text'];
 }
 
-if ( isset( $monalisa['monalisa_preloader_opt']) ) {
-	$monalisa_preloader_opt = $monalisa['monalisa_preloader_opt'];
+if ( isset( $soul_suite['soul_suite_preloader_opt']) ) {
+	$soul_suite_preloader_opt = $soul_suite['soul_suite_preloader_opt'];
 }
 
-if ( isset( $monalisa['monalisa_homepage_opt']) ) {
-	$monalisa_homepage_opt = $monalisa['monalisa_homepage_opt'];
+if ( isset( $soul_suite['soul_suite_homepage_opt']) ) {
+	$soul_suite_homepage_opt = $soul_suite['soul_suite_homepage_opt'];
 }
 
-$monalisa_default_logo_img = get_template_directory_uri() . '/assets/img/logo.png';
+$soul_suite_default_logo_img = get_template_directory_uri() . '/assets/img/logo.png';
 
 ?>
 
-<?php if($monalisa_preloader_opt == '1' && !$monalisa_homepage_opt == '1') { ?>
+<?php if($soul_suite_preloader_opt == '1' && !$soul_suite_homepage_opt == '1') { ?>
 
 <!-- START PRELOADER -->
 <div class="preloader">
 	<div class="status">
-		<div class="status-mes"><h4><?php echo esc_attr($monalisa_spinner_text);?></h4></div>
+		<div class="status-mes"><h4><?php echo esc_attr($soul_suite_spinner_text);?></h4></div>
 	</div>
 </div>
 <!-- END PRELOADER -->
 
-<?php }elseif($monalisa_preloader_opt == '1' && $monalisa_homepage_opt == '1'){ ?>	
+<?php }elseif($soul_suite_preloader_opt == '1' && $soul_suite_homepage_opt == '1'){ ?>	
 
 <?php if(is_front_page()) {?>
 <!-- START PRELOADER -->
 <div class="preloader">
 	<div class="status">
-		<div class="status-mes"><h4><?php echo esc_attr($monalisa_spinner_text);?></h4></div>
+		<div class="status-mes"><h4><?php echo esc_attr($soul_suite_spinner_text);?></h4></div>
 	</div>
 </div>
 <!-- END PRELOADER -->
@@ -231,7 +231,7 @@ $monalisa_default_logo_img = get_template_directory_uri() . '/assets/img/logo.pn
 				<?php if(get_custom_logo()){
 					 the_custom_logo();
 				}else { ?>
-				  <img src="<?php echo esc_url($monalisa_default_logo_img);?>" alt="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>">
+				  <img src="<?php echo esc_url($soul_suite_default_logo_img);?>" alt="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>">
 				<?php } ?>		
 			</a>
 		</div>
