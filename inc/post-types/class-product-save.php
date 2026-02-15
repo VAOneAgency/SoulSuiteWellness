@@ -2,7 +2,7 @@
 /**
  * Product Save Handler
  * 
- * @package Soul_Suite
+ * @package SoulSuite
  * @since 1.0.0
  */
 

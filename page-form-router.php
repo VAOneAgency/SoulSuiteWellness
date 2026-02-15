@@ -4,7 +4,7 @@
  *
  * Simple routing page that directs users to appropriate intake forms
  *
- * @package Monalisa
+ * @package SoulSuite
  */
 
 get_header();

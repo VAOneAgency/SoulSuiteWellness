@@ -4,7 +4,7 @@
  *
  * Template for displaying the lead intake form page with Calendly and Square booking integration.
  *
- * @package Monalisa
+ * @package SoulSuite
  */
 
 // Process form submission
@@ -48,11 +48,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['soul_intake_submit'])
         
         // Check if table exists, create if not
         if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-            // Include the table creation function if not already loaded
-            if (!function_exists('soul_suite_create_leads_table')) {
-                require_once(get_template_directory() . '/functions.php');
-            }
-            soul_suite_create_leads_table();
+            // Create table
+            $charset_collate = $wpdb->get_charset_collate();
+            $sql = "CREATE TABLE $table_name (
+                id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                name varchar(255) NOT NULL,
+                email varchar(255) NOT NULL,
+                phone varchar(50) DEFAULT NULL,
+                call_type varchar(50) NOT NULL,
+                services text DEFAULT NULL,
+                event_signup varchar(10) DEFAULT 'No',
+                date_submitted datetime NOT NULL,
+                ip_address varchar(100) DEFAULT NULL,
+                user_agent text DEFAULT NULL,
+                PRIMARY KEY  (id),
+                KEY email (email),
+                KEY date_submitted (date_submitted)
+            ) $charset_collate;";
+            
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta($sql);
         }
         
         $result = $wpdb->insert(
@@ -136,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['soul_intake_submit'])
 get_header();
 ?>
 
-<div id="primary" class="content-area">
+<div id="primary" class="content-area intake-form-page">
     <div id="main" class="site-main">
         <div class="container">
             <div class="row">
@@ -203,7 +218,7 @@ get_header();
                             <div class="event-signup">
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="event" value="yes" <?php echo (isset($_POST['event']) && $_POST['event'] === 'yes') ? 'checked' : ''; ?>>
-                                    Resilience Rx: Burnout Recovery Experience <strong>7/30/25 – 6:30pm ET</strong>
+                                    Resilience Rx: Burnout Recovery Experience <strong>7/30/25 â€“ 6:30pm ET</strong>
                                 </label>
                             </div>
                         </div>
@@ -222,7 +237,7 @@ get_header();
                     <?php if ($form_status === 'success' && isset($show_booking_type)): ?>
                     <!-- Calendly Booking Section -->
                     <div id="booking-section">
-                        <h3 class="booking-title">📅 Select Your Appointment Time</h3>
+                        <h3 class="booking-title">ðŸ“… Select Your Appointment Time</h3>
                         
                         <?php if ($show_booking_type === 'other'): ?>
                         <!-- General Inquiry Calendly -->
@@ -243,7 +258,7 @@ get_header();
                             <a href="<?php echo $show_booking_type === 'individual' ? 'https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/GJZY3CEHIIJR6XSGCXQR6D6P' : 'https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/HWYWQ6UMI4Q34K3TM27C7EU4'; ?>" 
                                class="square-booking-btn" 
                                target="_blank">
-                                Book via Square Appointments →
+                                Book via Square Appointments â†’
                             </a>
                         </div>
                         <?php endif; ?>
@@ -330,7 +345,7 @@ get_header();
 }
 
 #soul-intake-form h3::after {
-    content: '✨';
+    content: 'âœ¨';
     font-family: 'Dancing Script', cursive;
     position: absolute;
     right: -30px;
@@ -423,7 +438,7 @@ get_header();
 }
 
 .event-signup::before {
-    content: '🌟';
+    content: 'ðŸŒŸ';
     position: absolute;
     top: 15px;
     right: 20px;
@@ -492,7 +507,7 @@ get_header();
 }
 
 #form-message.success::before {
-    content: '✨';
+    content: 'âœ¨';
     position: absolute;
     top: 20px;
     right: 25px;

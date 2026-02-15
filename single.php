@@ -4,11 +4,11 @@
  *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/#single-post
  *
- * @package Monalisa
+ * @package SoulSuite
  */
 
 get_header(); 
-monalisa_single_banner();
+soul_suite_single_banner();
 ?>
 
 	<div id="primary" class="content-area">

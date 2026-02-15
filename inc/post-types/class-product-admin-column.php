@@ -2,7 +2,7 @@
 /**
  * Product Admin Columns
  * 
- * @package Monalisa
+ * @package SoulSuite
  * @since 1.0.0
  */
 

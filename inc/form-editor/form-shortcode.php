@@ -1,43 +1,4 @@
-<?php
-/**
- * Soulara Form Builder - Shortcode
- * 
- * Handles the shortcode to display forms and form submission processing
- */
-
-// Exit if accessed directly
-if (!defined('ABSPATH')) {
-    exit;
-}
-
-/**
- * Register the form shortcode
- */
-function soulara_form_shortcode($atts) {
-    $atts = shortcode_atts(array(
-        'id' => 0,
-    ), $atts, 'soulara_form');
-    
-    $form_id = absint($atts['id']);
-    
-    if (empty($form_id) || 'soulara_form' !== get_post_type($form_id)) {
-        return '<p class="error">' . __('Invalid form. Please check the form ID.', 'monalisa') . '</p>';
-    }
-    
-    // Get form configuration
-    $form_settings = get_post_meta($form_id, '_form_settings', true);
-    $form_services = get_post_meta($form_id, '_form_services', true);
-    $form_fields = get_post_meta($form_id, '_form_fields', true);
-    $form_styling = get_post_meta($form_id, '_form_styling', true);
-    
-    if (empty($form_settings) || empty($form_services) || empty($form_fields) || empty($form_styling)) {
-        return '<p class="error">' . __('Form is not properly configured.', 'monalisa') . '</p>';
-    }
-    
-    // Check if form was submitted
-    $form_message = '';
-    $form_status = '';
-    
+// (Removed: Soulara Form Builder shortcode code. Migrated to Soul Suite Form Builder system.)
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['soulara_form_id']) && $form_id == $_POST['soulara_form_id']) {
         list($form_status, $form_message) = soulara_process_form_submission($form_id, $form_fields);
     }

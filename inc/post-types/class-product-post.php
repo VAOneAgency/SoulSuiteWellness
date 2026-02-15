@@ -2,7 +2,7 @@
 /**
  * Main Product Post Type Class
  * 
- * @package Soul_Suite
+ * @package SoulSuite
  * @since 1.0.0
  */
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 // Include required files
 require_once get_template_directory() . '/inc/post-types/class-product-save.php';
 require_once get_template_directory() . '/inc/post-types/class-product-gallery.php';
-require_once get_template_directory() . '/inc/post-types/class-product-admin-columns.php';
+require_once get_template_directory() . '/inc/post-types/class-product-admin-column.php';
 
 // Register custom taxonomy for product categories
 function soul_register_product_categories() {

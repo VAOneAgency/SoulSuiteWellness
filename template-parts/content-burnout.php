@@ -1,52 +1,51 @@
-<body>
-    <!-- System Reset Section -->
-    <section class="system-reset-section" style="background-image: url('path-to-burnout-bg.jpg'); background-size: cover; background-position: center;">
-        <div class="container">
-            <div class="system-reset-content">
-                <h2 class="reset-title">BURNOUT ISN’T JUST STRESS. IT’S A WHOLE-SYSTEM BREAKDOWN</h2>
-                
-                <p class="system-reset-intro">
-                    Burnout isn’t a personal failure—it’s a predictable outcome of environments that ignore human sustainability.
-                </p>
+<?php
+/**
+ * Template Part: Burnout/Breaking the Cycle Section
+ * 
+ * @package SoulSuite
+ */
 
-                <div class="system-matrix-points">
-                    <div class="system-matrix-point">
-                        <p>
-                            ✔️ <strong>Toxic Productivity & “Hero Culture”</strong> that reward overextension and silence real needs
-                        </p>
-                    </div>
+// Get values from customizer (if they exist)
+$burnout_bg_image = get_option('soul_suite_burnout_bg_image');
+$burnout_bg_color = get_option('soul_suite_burnout_bg_color', '#ffffff');
+$burnout_title = get_option('soul_suite_burnout_title', 'Breaking the Cycle');
 
-                    <div class="system-matrix-point">
-                        <p>
-                            ✔️ <strong>Emotional Exhaustion, Empathic Overload & Values Misalignment</strong> that erode purpose and connection
-                        </p>
-                    </div>
+// Build background style
+$bg_style = '';
+if ($burnout_bg_image) {
+    $bg_style .= "background-image: url('" . esc_url($burnout_bg_image) . "'); background-size: cover; background-position: center;";
+}
+$bg_style .= " background-color: " . esc_attr($burnout_bg_color) . ";";
+?>
 
-                    <div class="system-matrix-point">
-                        <p>
-                            ✔️ <strong>Outdated Organizational Models</strong> that treat people as output instead of whole humans
-                        </p>
-                    </div>
-
-                    <div class="system-matrix-point">
-                        <p>
-                            ✔️ <strong>Chronic Stress Patterns</strong> imprinted in the body, nervous system, and workplace culture—individually and collectively
-                        </p>
-                    </div>
+<section class="burnout-section" style="<?php echo $bg_style; ?>">
+    <div class="container">
+        <?php if ($burnout_title): ?>
+        <h2 class="section-title"><?php echo esc_html($burnout_title); ?></h2>
+        <?php endif; ?>
+        
+        <div class="burnout-content">
+            <div class="burnout-image">
+                <img src="https://soulsuitewellness.com/wp-content/uploads/2025/07/AdobeStock_187293579_Preview.webp" alt="Wellness candles representing peace and transformation">
+            </div>
+            
+            <div class="burnout-text">
+                <div class="burnout-highlight">
+                    <h3>ARE YOU CAUGHT IN A CYCLE OF BURNOUT?</h3>
                 </div>
-
-                <p class="reset-note">
-                    This isn’t something a day off or a meditation app can fix.
-                </p>
-
-                <p class="reset-conclusion-text">
-                    Your people need a deep recalibration—a strategic, emotional, and physiological reset that restores well-being at the root.
-                </p>
-
-                <div class="system-reset-cta">
-                    <a href="https://soulsuitewellness.com/intake-form/" class="hero-btn primary-btn">Learn More About The WellSR Portal</a>
+                
+                <p>If you're a healthcare executive, wellness leader, provider, or purpose-driven organization constantly pushing through stress, high turnover, and silent suffering—you're not alone.</p>
+                
+                <p>The cycle of burnout is an invisible system of over-functioning, people-pleasing, emotional suppression, and energetic depletion.</p>
+                
+                <p>This isn't about managing stress. It's about <strong>dismantling the system</strong> that's keeping your team stuck in survival mode.</p>
+                
+                <div class="burnout-cta">
+                    <a href="<?php echo esc_url(get_option('soul_suite_hero_btn_url', '/intake-form/')); ?>" class="hero-btn primary-btn">
+                        <?php echo esc_html(get_option('soul_suite_hero_btn_text', 'Book a Clarity Call')); ?>
+                    </a>
                 </div>
             </div>
         </div>
-    </section>
-</body>
+    </div>
+</section>>

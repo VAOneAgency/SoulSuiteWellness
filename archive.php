@@ -4,11 +4,11 @@
  *
  * @link https://codex.wordpress.org/Template_Hierarchy
  *
- * @package Monalisa
+ * @package SoulSuite
  */
 
 get_header(); 
-monalisa_archive_banner();
+soul_suite_archive_banner();
 ?>
 
 	<div id="primary" class="content-area">

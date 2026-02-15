@@ -1,6 +1,6 @@
 <?php
 /**
-Template Name: Full Width
+ * Template Name: Full Width
  *
  * This is the template that displays all pages by default.
  * Please note that this is the WordPress construct of pages
@@ -9,11 +9,11 @@ Template Name: Full Width
  *
  * @link https://codex.wordpress.org/Template_Hierarchy
  *
- * @package monalisa
+ * @package SoulSuite
  */
 
 get_header();
-monalisa_single_banner();
+soul_suite_single_banner();
 ?>
 
 	<div id="blog" class="content-area">

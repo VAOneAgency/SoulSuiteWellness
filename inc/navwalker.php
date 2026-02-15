@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Name: monalisa_navwalker
+ * Class Name: SoulSuite_navwalker
  * GitHub URI: https://github.com/twittem/wp-bootstrap-navwalker
  * Description: A custom WordPress nav walker class to implement the Bootstrap 3 navigation style in a custom theme using the WordPress built in menu manager.
  * Version: 2.0.4
@@ -10,7 +10,7 @@
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-class monalisa_navwalker extends Walker_Nav_Menu {
+class SoulSuite_navwalker extends Walker_Nav_Menu {
 
 
 	public static function fallback( $args ) {
@@ -47,7 +47,7 @@ class monalisa_navwalker extends Walker_Nav_Menu {
 			if ( $container )
 				$fb_output .= '</' . $container . '>';
 
-			echo monalisa_wp_kses($fb_output);
+			echo wp_kses_post($fb_output);
 		}
 	}
 }

@@ -2319,7 +2319,6 @@ main {
 
 /* Ensure content area has proper spacing */
 #content {
-  padding: 30px 0;
   min-height: calc(100vh - 400px);
   position: relative;
   overflow: visible;

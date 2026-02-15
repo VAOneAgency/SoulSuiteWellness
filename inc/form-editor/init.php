@@ -1,42 +1,5 @@
+
 <?php
-/**
- * Soulara Form Builder - Init
- * 
- * Initializes the form builder system and loads required components
- */
-
-// Exit if accessed directly
-if (!defined('ABSPATH')) {
-    exit;
-}
-
-// Load the form post type
-require_once get_template_directory() . '/inc/form-editor/form-post-type.php';
-
-// Load the form shortcode
-require_once get_template_directory() . '/inc/form-editor/form-shortcode.php';
-
-/**
- * Enqueue form scripts and styles
- */
-function soulara_form_enqueue_scripts() {
-    // Only enqueue scripts when a form is on the page
-    global $post;
-    
-    if (is_a($post, 'WP_Post') && (
-        has_shortcode($post->post_content, 'soulara_form') || 
-        is_page_template('intake-form-template.php')
-    )) {
-        wp_enqueue_script('jquery');
-        wp_enqueue_script('jquery-ui-datepicker');
-        wp_enqueue_style('jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
-        
-        // Enqueue custom form scripts if needed
-        // wp_enqueue_script('soulara-forms', get_template_directory_uri() . '/js/soulara-forms.js', array('jquery'), '1.0', true);
-    }
-}
-add_action('wp_enqueue_scripts', 'soulara_form_enqueue_scripts');
-
 /**
  * Admin scripts for form editor
  */

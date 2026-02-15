@@ -1,684 +1,556 @@
 <?php
 /**
- * Monalisa functions and definitions
- *
- * @link https://developer.wordpress.org/themes/basics/theme-functions/
- *
- * @package Monalisa
+ * Soul Suite Wellness Theme Functions
+ * 
+ * @package SoulSuite
+ * @version 2.0.0
  */
 
-if ( ! function_exists( 'monalisa_setup' ) ) :
-/**
- * Sets up theme defaults and registers support for various WordPress features.
- *
- * Note that this function is hooked into the after_setup_theme hook, which
- * runs before the init hook. The init hook is too late for some features, such
- * as indicating support for post thumbnails.
- */
-function monalisa_setup() {
-	/*
-	 * Make theme available for translation.
-	 * Translations can be filed in the /languages/ directory.
-	 * If you're building a theme based on Monalisa, use a find and replace
-	 * to change 'monalisa' to the name of your theme in all the template files.
-	 */
-	load_theme_textdomain( 'monalisa', get_template_directory() . '/languages' );
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
 
-	// Add default posts and comments RSS feed links to head.
-	add_theme_support( 'automatic-feed-links' );
+// =============================
+// Load Theme Config FIRST (defines constants)
+// =============================
+require_once get_template_directory() . '/inc/theme-config.php';
 
-	/*
-	 * Let WordPress manage the document title.
-	 * By adding theme support, we declare that this theme does not use a
-	 * hard-coded <title> tag in the document head, and expect WordPress to
-	 * provide it for us.
-	 */
-	add_theme_support( 'title-tag' );
+// =============================
+// Load Core Theme Files (now we can use constants)
+// =============================
+require_once SOUL_SUITE_INC_DIR . '/form-builder.php';
+require_once SOUL_SUITE_INC_DIR . '/template-parts-controller.php';
+require_once SOUL_SUITE_INC_DIR . '/customizer.php';
 
-	/*
-	 * Enable support for Post Thumbnails on posts and pages.
-	 *
-	 * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
-	 */
-	add_theme_support( 'post-thumbnails' );
-	add_image_size( 'monalisa_image_770_510', 770,510, true );
-	add_image_size( 'monalisa_image_1280_500', 1280,500, true );
-	add_image_size( 'monalisa_image_870_984', 870,984, true );
-	add_image_size( 'monalisa_image_200_200', 200,200, true );
-	add_image_size( 'monalisa_image_1200_800', 1200,800, true );
-	add_image_size( 'monalisa_image_210_90', 210,90, true );
-	add_image_size( 'monalisa_image_840_430', 840,430, true );
+// Load admin files in admin only
+if (is_admin()) {
+    if (file_exists(SOUL_SUITE_INC_DIR . '/admin/forms-admin.php')) {
+        require_once SOUL_SUITE_INC_DIR . '/admin/forms-admin.php';
+    }
+}
 
-	// This theme uses wp_nav_menu() in one location.
-	register_nav_menus( array(
-		'menu-1' => esc_html__( 'Primary', 'monalisa' ),
-	) );
+// Load legacy support files if they exist
+$legacy_files = array(
+    'custom-header.php',
+    'template-tags.php',
+    'extras.php',
+    'jetpack.php',
+    'navwalker.php',
+    'custom-functions.php',
+);
 
-	/*
-	 * Set woocommerce support  
-	 * 
-	 */
-	add_theme_support( 'woocommerce' );	
-	
-	// Custom Logo
-	add_theme_support( 'custom-logo' );
-	
-	/*
-	 * Switch default core markup for search form, comment form, and comments
-	 * to output valid HTML5.
-	 */
-	add_theme_support( 'html5', array(
-		'search-form',
-		'comment-form',
-		'comment-list',
-		'gallery',
-		'caption',
-	) );
-	
-	add_theme_support( 'post-formats', array(
-		'audio',
-		'video',
-	) );
-	
-	// Set up the WordPress core custom background feature.
-	add_theme_support( 'custom-background', apply_filters( 'monalisa_custom_background_args', array(
-		'default-color' => 'ffffff',
-		'default-image' => '',
-	) ) );
+foreach ($legacy_files as $file) {
+    $filepath = SOUL_SUITE_INC_DIR . '/' . $file;
+    if (file_exists($filepath)) {
+        require_once $filepath;
+    }
+}
 
-	// Add theme support for selective refresh for widgets.
-	add_theme_support( 'customize-selective-refresh-widgets' );
-	add_editor_style( array( 'assets/css/editor-style.css', monalisa_google_fonts_url() ) );
+// =============================
+// Theme Setup
+// =============================
+if (!function_exists('soul_suite_setup')) :
+function soul_suite_setup() {
+    // Load text domain
+    load_theme_textdomain('soul-suite', SOUL_SUITE_THEME_DIR . '/languages');
+    
+    // Add default posts and comments RSS feed links to head
+    add_theme_support('automatic-feed-links');
+    
+    // Let WordPress manage the document title
+    add_theme_support('title-tag');
+    
+    // Enable support for Post Thumbnails
+    add_theme_support('post-thumbnails');
+    
+    // Register image sizes
+    $image_sizes = soul_suite_image_sizes();
+    foreach ($image_sizes as $name => $size) {
+        add_image_size($name, $size[0], $size[1], $size[2]);
+    }
+    
+    // Legacy image sizes (backwards compatibility)
+    add_image_size('SoulSuite_image_770_510', 770, 510, true);
+    add_image_size('SoulSuite_image_1280_500', 1280, 500, true);
+    add_image_size('SoulSuite_image_870_984', 870, 984, true);
+    add_image_size('SoulSuite_image_200_200', 200, 200, true);
+    add_image_size('SoulSuite_image_1200_800', 1200, 800, true);
+    add_image_size('SoulSuite_image_210_90', 210, 90, true);
+    add_image_size('SoulSuite_image_840_430', 840, 430, true);
+    
+    // Register navigation menus
+    $nav_menus = soul_suite_nav_menus();
+    register_nav_menus($nav_menus);
+    
+    // Legacy menu for backwards compatibility
+    register_nav_menus(array(
+        'menu-1' => __('Primary (Legacy)', 'soul-suite'),
+    ));
+    
+    // Custom Logo
+    add_theme_support('custom-logo');
+    
+    // HTML5 support
+    add_theme_support('html5', array(
+        'search-form',
+        'comment-form',
+        'comment-list',
+        'gallery',
+        'caption',
+    ));
+    
+    // Post formats
+    add_theme_support('post-formats', array('audio', 'video'));
+    
+    // Custom background
+    add_theme_support('custom-background', apply_filters('soul_suite_custom_background_args', array(
+        'default-color' => 'ffffff',
+        'default-image' => '',
+    )));
+    
+    // Selective refresh for widgets
+    add_theme_support('customize-selective-refresh-widgets');
+    
+    // Editor style
+    add_editor_style(array('assets/css/editor-style.css', soul_suite_google_fonts_url()));
+    
+    // Set content width
+    $GLOBALS['content_width'] = apply_filters('soul_suite_content_width', 1200);
 }
 endif;
-add_action( 'after_setup_theme', 'monalisa_setup' );
+add_action('after_setup_theme', 'soul_suite_setup');
 
-/**
- * Set the content width in pixels, based on the theme's design and stylesheet.
- *
- * Priority 0 to make it available to lower priority callbacks.
- *
- * @global int $content_width
- */
-function monalisa_content_width() {
-	$GLOBALS['content_width'] = apply_filters( 'monalisa_content_width', 640 );
+// =============================
+// Widget Areas
+// =============================
+function soul_suite_widgets_init() {
+    $widget_areas = soul_suite_widget_areas();
+    foreach ($widget_areas as $widget_area) {
+        register_sidebar($widget_area);
+    }
 }
-add_action( 'after_setup_theme', 'monalisa_content_width', 0 );
+add_action('widgets_init', 'soul_suite_widgets_init');
 
-/**
- * Register widget area.
- *
- * @link https://developer.wordpress.org/themes/functionality/sidebars/#registering-a-sidebar
- */
-function monalisa_widgets_init() {
-	register_sidebar( array(
-		'name'          => esc_html__( 'Sidebar', 'monalisa' ),
-		'id'            => 'sidebar-1',
-		'description'   => esc_html__( 'Add widgets here.', 'monalisa' ),
-		'before_widget' => '<section id="%1$s" class="widget %2$s">',
-		'after_widget'  => '</section>',
-		'before_title'  => '<h2 class="widget-title">',
-		'after_title'   => '</h2>',
-	) );	
-	
-	register_sidebar( array(
-		'name'          => esc_html__( 'Shop Sidebar', 'monalisa' ),
-		'id'            => 'sidebar-2',
-		'description'   => esc_html__( 'Add widgets here.', 'monalisa' ),
-		'before_widget' => '<section id="%1$s" class="widget %2$s">',
-		'after_widget'  => '</section>',
-		'before_title'  => '<h2 class="widget-title">',
-		'after_title'   => '</h2>',
-	) );
-}
-add_action( 'widgets_init', 'monalisa_widgets_init' );
-
-/**
- * register google fonts
- */
-function monalisa_google_fonts_url() {
-	$fonts_url = '';
-	
-	/* Translators: If there are characters in your language that are not
-	* supported by Source Sans Pro, translate this to 'off'. Do not translate
-	* into your own language.
-	*/
-	$lato = esc_html_x( 'on', 'Lato font: on or off', 'monalisa' );
-
-	/* Translators: If there are characters in your language that are not
-	* supported by Lato, translate this to 'off'. Do not translate
-	* into your own language.
-	*/
-	
-	$montserrat = esc_html_x( 'on', 'Montserrat font: on or off', 'monalisa' );
-	
-	if ( 'off' !== $lato || 'off' !== $montserrat ) {
-	$font_families = array();
-	 
-	if ( 'off' !== $lato ) {
-	$font_families[] = 'Lato:300,300i,400,400i,700,700i';
-	}
-	 
-	
-	if ( 'off' !== $montserrat ) {
-	$font_families[] = 'Montserrat:400,700';
-	}
-	 
-	$query_args = array(
-	'family' => urlencode( implode( '|', $font_families ) ),
-	'subset' => urlencode( 'latin,latin-ext' ),
-	);
-
-	$fonts_url = add_query_arg( $query_args, 'https://fonts.googleapis.com/css' );
-	}
-	 
-	return esc_url_raw( $fonts_url );	
-}
-
-function monalisa_main_menu() {
-		wp_nav_menu( array(
-		'theme_location'    => 'menu-1',
-		'depth'             => 5,
-		'container'         => false,
-		'menu_class'        => 'nav navbar-nav navbar-right',
-		'fallback_cb'       => 'monalisa_navwalker::fallback',
-		
-		)
-	); 	
-}
-
-/**
- * Enqueue scripts and styles.
- */
-function monalisa_scripts() {
-	
-	//google font
-	wp_enqueue_style( 'monalisa-google-fonts', monalisa_google_fonts_url(), array(), null );	
-	wp_enqueue_style('bootstrap' , get_template_directory_uri(). '/assets/bootstrap/css/bootstrap.min.css');	
-	wp_enqueue_style('font-awesome.min' , get_template_directory_uri(). '/assets/fonts/font-awesome.min.css');	
-	wp_enqueue_style('owl.carousel' , get_template_directory_uri(). '/assets/owlcarousel/css/owl.carousel.css');	
-	wp_enqueue_style('owl.theme' , get_template_directory_uri(). '/assets/owlcarousel/css/owl.theme.css');	
-	wp_enqueue_style('prettyPhoto' , get_template_directory_uri(). '/assets/css/prettyPhoto.css');	
-	wp_enqueue_style('flexslider' , get_template_directory_uri(). '/assets/css/flexslider.css');	
-	wp_enqueue_style('animate' , get_template_directory_uri(). '/assets/css/animate.css');	
-	wp_enqueue_style('monalisa-main-style' , get_template_directory_uri(). '/assets/css/style.css');	
-	wp_enqueue_style( 'monalisa-style', get_stylesheet_uri() );
-
-	// Load JS Files
-	wp_enqueue_script( 'html5shiv', get_template_directory_uri() . '/js/html5shiv.min.js', array(), '3.7.2' );	
-	wp_script_add_data( 'html5shiv', 'conditional', 'lt IE 9' ); 	
-	wp_enqueue_script( 'respond', get_template_directory_uri() . '/js/respond.min.js', array(), '1.4.2' );
-	wp_script_add_data( 'respond', 'conditional', 'lt IE 9' ); 
-	
-	wp_enqueue_script( 'bootstrap', get_template_directory_uri() . '/assets/bootstrap/js/bootstrap.min.js', array('jquery'), '659812', true );
-	wp_enqueue_script( 'modernizr', get_template_directory_uri() . '/assets/js/modernizr-2.8.3.min.js', array('jquery'), '659812', true );
-	wp_enqueue_script( 'jquery.inview.min', get_template_directory_uri() . '/assets/js/jquery.inview.min.js', array('jquery'), '659812', true );
-	wp_enqueue_script( 'jquery.flexslider-min', get_template_directory_uri() . '/assets/js/jquery.flexslider-min.js', array('jquery'), '659812', true );
-	wp_enqueue_script( 'jquery.prettyPhoto', get_template_directory_uri() . '/assets/js/jquery.prettyPhoto.js', array('jquery'), '659812', true );
-	wp_enqueue_script( 'owl.carousel.min', get_template_directory_uri() . '/assets/owlcarousel/js/owl.carousel.min.js', array('jquery'), '659812', true );
-	wp_enqueue_script( 'scrolltopcontrol', get_template_directory_uri() . '/assets/js/scrolltopcontrol.js', array('jquery'), '659812', true );
-	wp_enqueue_script( 'wow.min', get_template_directory_uri() . '/assets/js/wow.min.js', array('jquery'), '659812', true );
-	wp_enqueue_script( 'scripts', get_template_directory_uri() . '/assets/js/scripts.js', array('jquery'), '659812', true );
-
-	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
-		wp_enqueue_script( 'comment-reply' );
-	}
-}
-add_action( 'wp_enqueue_scripts', 'monalisa_scripts' );
-
-function monalisa_wp_kses($val){
-	return wp_kses($val, array(
-	
-	'p' => array(
-		'class' =>array()
-	),
-	'span' => array(),
-	'small' => array(),
-	'div' => array(),
-	'strong' => array(),
-	'b' => array(),
-	'br' => array(),
-	'h1' => array(),
-	'i' => array(
-		'class' =>array()
-	),	
-	'ul' => array(
-		'class' =>array()
-	),	
-	'ul' => array(
-		'id' =>array()
-	),	
-	'li' => array(
-		'class' =>array()
-	),	
-	'li' => array(
-		'id' =>array()
-	),
-	'h2' => array(),
-	'h3' => array(),
-	'h4' => array(),
-	'h5' => array(),
-	'h6' => array(),
-	'a'=> array('href' => array(),'target' => array()),
-	'iframe'=> array('src' => array(),'height' => array(),'width' => array()),
-	
-	), '');
-}
-
-/*---------------------------------------------
- Initialising KingComposer editor
-----------------------------------------------*/ 
-if (class_exists('KingComposer')) {
- function monalisa_requireVcExtend(){
-  include_once( get_template_directory().'/kc_extend/extend_kc.php');  
- }
- add_action('init', 'monalisa_requireVcExtend',2);
-}
-
-// modify search widget
-function monalisa_my_search_form( $form ) {
-	$form = '
-		<div class="form-group search-input">
-			<div class="search_form">
-				<form role="search" method="get" id="searchform" class="searchform" action="' . esc_url(home_url( '/' )) . '" >
-				<input type="text" value="' . esc_attr(get_search_query()) . '" name="s" id="s" class="form-control search_field" placeholder="' . esc_attr__('Search...' , 'monalisa') .'">
-				</form>
-			</div>
-		</div>
-        ';
-	return $form;
-}
-add_filter( 'get_search_form', 'monalisa_my_search_form' );
-
-// comment list modify
-
-function monalisa_comments($comment, $args, $depth) {
-   $GLOBALS['comment'] = $comment; ?>
-
-<li <?php comment_class(); ?> id="comment-<?php comment_ID() ?>">
-	<div class="single_comment">
-		<div class="media">
-			<div class="comment_avatar">
-				<?php echo get_avatar( $comment, 70 ); ?>
-			</div>
-
-			<div class="media-body text-left comment_single">
-				
-				<h5 class="media-heading"><?php comment_author_link() ?> <span><?php echo esc_html(' - '); echo esc_html(get_comment_date('F j, Y')); ?> <?php echo esc_html(get_comment_date('g:i')); ?></span> <div class="creply_link"> <?php comment_reply_link(array_merge( $args, array('depth' => $depth, 'max_depth' => $args['max_depth']))); ?></div></h5>
-				<?php if ($comment->comment_approved == '0') : ?>
-				<p><em><?php esc_html_e('Your comment is awaiting moderation.','monalisa'); ?></em></p>
-				<?php endif; ?>
-				 <?php comment_text(); ?>							
-			</div>
-		</div>
-	</div>				
-</li>
-
-
-<?php } 
-
-// comment box title change
-add_filter( 'comment_form_defaults', 'monalisa_remove_comment_form_allowed_tags' );
-function monalisa_remove_comment_form_allowed_tags( $defaults ) {
-
-	$defaults['comment_notes_after'] = '';
-	$defaults['comment_notes_before'] = '';
-	return $defaults;
-
-}
-
-function monalisa_comment_reform ($arg) {
-
-$arg['title_reply'] = esc_html__('Write your comment Here','monalisa');
-$arg['comment_field'] = '<div class="row"><div class="form-group col-md-12"><textarea id="comment" class="comment_field form-control" name="comment" cols="77" rows="3" placeholder="'. esc_html__("Write your Comment", "monalisa").'" aria-required="true"></textarea></div></div>';
-
-
-return $arg;
-
-}
-add_filter('comment_form_defaults','monalisa_comment_reform');
-
-// comment form modify
-
-function monalisa_modify_comment_form_fields($fields){
-	$commenter = wp_get_current_commenter();
-	$req	   = get_option( 'require_name_email' );
-
-	$fields['author'] = '<div class="row"><div class="form-group col-md-4"><input type="text" name="author" id="author" value="'. esc_attr( $commenter['comment_author'] ) .'" placeholder="'. esc_attr__("Your Name *", "monalisa").'" size="22" tabindex="1"'. ( $req ? 'aria-required="true"' : '' ).' class="input-name form-control" /></div>';
-
-	$fields['email'] = '<div class="form-group col-md-4"><input type="text" name="email" id="email" value="'. esc_attr( $commenter['comment_author_email'] ) .'" placeholder="'.esc_attr__("Your Email *", "monalisa").'" size="22" tabindex="2"'. ( $req ? 'aria-required="true"' : '' ).' class="input-email form-control"  /></div>';
-	
-	$fields['url'] = '<div class="form-group col-md-4"><input type="text" name="url" id="url" value="'. esc_attr( $commenter['comment_author_url'] ) .'" placeholder="'. esc_attr__("Website", "monalisa").'" size="22" tabindex="2"'. ( $req ? 'aria-required="false"' : '' ).' class="input-url form-control"  /></div></div>';
-
-	return $fields;
-}
-add_filter('comment_form_default_fields','monalisa_modify_comment_form_fields');
-
-// New Lead Form for Individual and Business Clients
-add_action('init', function() {
-  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['client_type'], $_POST['fullname'], $_POST['email'])) {
+// =============================
+// Enqueue Scripts and Styles
+// =============================
+function soul_suite_scripts() {
+    // Google Fonts
+    wp_enqueue_style('soul-suite-google-fonts', soul_suite_google_fonts_url(), array(), null);
     
-    // Basic validation
-    $errors = array();
+    // CSS Files
+    wp_enqueue_style('bootstrap', SOUL_SUITE_ASSETS_URI . '/bootstrap/css/bootstrap.min.css', array(), '4.6.0');
+    wp_enqueue_style('font-awesome', SOUL_SUITE_ASSETS_URI . '/fonts/font-awesome.min.css', array(), '4.7.0');
+    wp_enqueue_style('owl-carousel', SOUL_SUITE_ASSETS_URI . '/owlcarousel/css/owl.carousel.css', array(), '2.3.4');
+    wp_enqueue_style('owl-theme', SOUL_SUITE_ASSETS_URI . '/owlcarousel/css/owl.theme.css', array(), '2.3.4');
+    wp_enqueue_style('animate', SOUL_SUITE_ASSETS_URI . '/css/animate.css', array(), '4.1.1');
+    wp_enqueue_style('soul-suite-main-style', SOUL_SUITE_ASSETS_URI . '/css/style.css', array(), SOUL_SUITE_VERSION);
+    wp_enqueue_style('soul-suite-style', get_stylesheet_uri(), array(), SOUL_SUITE_VERSION);
     
-    // Sanitize and validate required fields (matching template field names exactly)
-    $type = sanitize_text_field($_POST['client_type']);
-    $name = sanitize_text_field($_POST['fullname']); // Template uses 'fullname', not 'name'
-    $email = sanitize_email($_POST['email']);
-    
-    // Validate required fields
-    if (empty($name)) {
-      $errors[] = 'Full name is required.';
+    // Custom CSS
+    if (file_exists(SOUL_SUITE_THEME_DIR . '/assets/css/custom.css')) {
+        wp_enqueue_style('soul-suite-custom', SOUL_SUITE_ASSETS_URI . '/assets/css/custom.css', array('soul-suite-style'), SOUL_SUITE_VERSION);
     }
     
-    if (empty($email) || !is_email($email)) {
-      $errors[] = 'Valid email address is required.';
+    // JavaScript Files
+    wp_enqueue_script('bootstrap', SOUL_SUITE_ASSETS_URI . '/bootstrap/js/bootstrap.min.js', array('jquery'), '4.6.0', true);
+    wp_enqueue_script('wow', SOUL_SUITE_ASSETS_URI . '/js/wow.min.js', array('jquery'), '1.3.0', true);
+    wp_enqueue_script('owl-carousel', SOUL_SUITE_ASSETS_URI . '/owlcarousel/js/owl.carousel.min.js', array('jquery'), '2.3.4', true);
+    
+    // Check if scripts.js exists
+    if (file_exists(SOUL_SUITE_THEME_DIR . '/assets/js/scripts.js')) {
+        wp_enqueue_script('soul-suite-scripts', SOUL_SUITE_ASSETS_URI . '/js/scripts.js', array('jquery'), SOUL_SUITE_VERSION, true);
     }
     
-    if (!in_array($type, ['individual', 'business'])) {
-      $errors[] = 'Invalid client type selected.';
+    // Localize script
+    wp_localize_script('soul-suite-scripts', 'soulSuite', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('soul_suite_nonce'),
+    ));
+    
+    // Comment reply
+    if (is_singular() && comments_open() && get_option('thread_comments')) {
+        wp_enqueue_script('comment-reply');
+    }
+}
+add_action('wp_enqueue_scripts', 'soul_suite_scripts');
+
+// =============================
+// Form Shortcode
+// =============================
+function soul_suite_form_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'slug' => '',
+    ), $atts);
+    
+    if (empty($atts['slug'])) {
+        return '<p class="form-error">Error: Form slug is required.</p>';
     }
     
-    // If there are validation errors, handle them
-    if (!empty($errors)) {
-      // Store errors in session to display after redirect
-      if (!session_id()) {
-        session_start();
-      }
-      $_SESSION['form_errors'] = $errors;
-      wp_redirect($_SERVER['REQUEST_URI']);
-      exit;
-    }
-
-    $admin_email = 'bewell@soulsuitewellness.com';
-
-    // Collect ALL form data that matches your template's form fields
-    $services = isset($_POST['services']) ? array_map('sanitize_text_field', $_POST['services']) : array();
-    $contact_method = isset($_POST['contact_method']) ? sanitize_text_field($_POST['contact_method']) : 'Not specified';
+    $form = Soul_Suite_Form_Builder::get_form_by_slug($atts['slug']);
     
-    // Map service values to readable names (matching your template exactly)
-    $service_names = array(
-        'wellness-coaching' => 'Wellness Coaching',
-        'meditation' => 'Meditation Sessions', 
-        'corporate-wellness' => 'Corporate Wellness Programs',
-        'stress-management' => 'Stress Management',
-        'mindfulness' => 'Mindfulness Training',
-        'other' => 'Other'
-    );
-    
-    // Process services into readable format
-    $services_text = '';
-    if (!empty($services)) {
-      $services_text = "\nServices Interested In:\n";
-      foreach ($services as $service) {
-        $readable_name = isset($service_names[$service]) ? $service_names[$service] : ucwords(str_replace('-', ' ', $service));
-        $services_text .= "✓ " . $readable_name . "\n";
-      }
-    } else {
-      $services_text = "\nServices Interested In: None selected\n";
+    if (!$form) {
+        return '<p class="form-error">Error: Form "' . esc_html($atts['slug']) . '" not found.</p>';
     }
-
-    // Process attendee information and collect valid attendees for emailing
-    $attendee_info = '';
-    $valid_attendees = array();
-    if (!empty($_POST['attendees']) && is_array($_POST['attendees'])) {
-      $attendees_found = false;
-      foreach ($_POST['attendees'] as $i => $attendee) {
-        if (is_array($attendee)) {
-          $attendee_name = sanitize_text_field($attendee['name'] ?? '');
-          $attendee_email = sanitize_email($attendee['email'] ?? '');
-          
-          // Only process if we have at least a name or valid email
-          if (!empty($attendee_name) || (!empty($attendee_email) && is_email($attendee_email))) {
-            if (!$attendees_found) {
-              $attendee_info .= "\n\nAdditional Attendees:\n";
-              $attendees_found = true;
-            }
-            $attendee_info .= "Attendee " . ($i+1) . ": ";
-            $attendee_info .= !empty($attendee_name) ? $attendee_name : 'No name';
-            $attendee_info .= " <" . (!empty($attendee_email) ? $attendee_email : 'No email') . ">\n";
-            
-            // Store valid attendees for emailing (must have valid email)
-            if (!empty($attendee_email) && is_email($attendee_email)) {
-              $valid_attendees[] = array(
-                'name' => !empty($attendee_name) ? $attendee_name : 'Team Member',
-                'email' => $attendee_email
-              );
-            }
-          }
-        }
-      }
-      if (!$attendees_found) {
-        $attendee_info = "\nAdditional Attendees: None\n";
-      }
-    }
-
-    // Build comprehensive admin email
-    $submission_time = current_time('F j, Y g:i a');
-    $ip_address = $_SERVER['REMOTE_ADDR'];
     
-    if ($type === 'individual') {
-      $focus = sanitize_textarea_field($_POST['focus'] ?? ''); // Template field name
-      $subject_admin = "🌿 New INDIVIDUAL Lead: $name";
-      
-      $body_admin = "==========================================\n";
-      $body_admin .= "NEW INDIVIDUAL CLIENT LEAD\n";
-      $body_admin .= "==========================================\n\n";
-      $body_admin .= "CONTACT INFORMATION:\n";
-      $body_admin .= "Full Name: $name\n";
-      $body_admin .= "Email: $email\n";
-      $body_admin .= "Preferred Contact Method: " . ucfirst($contact_method) . "\n";
-      $body_admin .= "Submission Time: $submission_time\n";
-      $body_admin .= "IP Address: $ip_address\n\n";
-      
-      $body_admin .= "CLIENT DETAILS:\n";
-      $body_admin .= "Primary Focus/Concern: " . (!empty($focus) ? $focus : 'Not specified') . "\n";
-      $body_admin .= $services_text;
-      
-      $body_admin .= "\n==========================================\n";
-      $body_admin .= "NEXT STEPS:\n";
-      $body_admin .= "Client will be redirected to Individual Strategy Call booking\n";
-      $body_admin .= "Square URL: https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/GJZY3CEHIIJR6XSGCXQR6D6P\n";
-      $body_admin .= "==========================================\n";
-      
-      $redirect_url = 'https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/GJZY3CEHIIJR6XSGCXQR6D6P'; 
-      
-    } else {
-      // Business fields matching template exactly
-      $company = sanitize_text_field($_POST['company'] ?? '');
-      $goals = sanitize_textarea_field($_POST['goals'] ?? '');
-      $team_size = intval($_POST['team_size'] ?? 0); // Template uses intval
-      
-      $subject_admin = "🏢 New BUSINESS Lead: $name" . (!empty($company) ? " ($company)" : "");
-      
-      $body_admin = "==========================================\n";
-      $body_admin .= "NEW BUSINESS CLIENT LEAD\n";
-      $body_admin .= "==========================================\n\n";
-      $body_admin .= "CONTACT INFORMATION:\n";
-      $body_admin .= "Full Name: $name\n";
-      $body_admin .= "Email: $email\n";
-      $body_admin .= "Preferred Contact Method: " . ucfirst($contact_method) . "\n";
-      $body_admin .= "Submission Time: $submission_time\n";
-      $body_admin .= "IP Address: $ip_address\n\n";
-      
-      $body_admin .= "BUSINESS DETAILS:\n";
-      $body_admin .= "Business/Organization: " . (!empty($company) ? $company : 'Not specified') . "\n";
-      $body_admin .= "Team Size: " . ($team_size > 0 ? $team_size . " members" : 'Not specified') . "\n";
-      $body_admin .= "Team/Wellness Goals: " . (!empty($goals) ? $goals : 'Not specified') . "\n";
-      $body_admin .= $services_text;
-      $body_admin .= $attendee_info;
-      
-      $body_admin .= "\n==========================================\n";
-      $body_admin .= "EMAIL NOTIFICATIONS SENT:\n";
-      if (!empty($valid_attendees)) {
-        $body_admin .= "✓ Main contact: " . $name . " (" . $email . ")\n";
-        $body_admin .= "✓ Additional attendees notified: " . $attendee_emails_sent . "\n";
-        if ($attendee_email_errors > 0) {
-          $body_admin .= "⚠ Attendee email failures: " . $attendee_email_errors . "\n";
-        }
-        $body_admin .= "\nAttendees who received invitations:\n";
-        foreach ($valid_attendees as $attendee) {
-          $body_admin .= "- " . $attendee['name'] . " (" . $attendee['email'] . ")\n";
-        }
-      } else {
-        $body_admin .= "✓ Main contact only: " . $name . " (" . $email . ")\n";
-        $body_admin .= "Note: No additional attendees to notify\n";
-      }
-      $body_admin .= "\nNEXT STEPS:\n";
-      $body_admin .= "Client will be redirected to Business Strategy Call booking\n";
-      $body_admin .= "Square URL: https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/HWYWQ6UMI4Q34K3TM27C7EU4\n";
-      $body_admin .= "==========================================\n";
-      
-      $redirect_url = 'https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/HWYWQ6UMI4Q34K3TM27C7EU4'; 
+    ob_start();
+    $template = locate_template('template-parts/form-render.php');
+    if ($template) {
+        include $template;
     }
+    return ob_get_clean();
+}
+add_shortcode('soul_suite_form', 'soul_suite_form_shortcode');
 
-    // Send to Admin with error handling
-    $admin_email_sent = wp_mail($admin_email, $subject_admin, $body_admin);
+// =============================
+// Form Submission Handler (AJAX)
+// =============================
+function soul_suite_handle_form_submission() {
+    check_ajax_referer('soul_suite_nonce', 'nonce');
     
-    if (!$admin_email_sent) {
-      error_log('Failed to send admin notification email for lead: ' . $name . ' (' . $email . ')');
+    $form_slug = sanitize_text_field($_POST['form_slug'] ?? '');
+    $form = Soul_Suite_Form_Builder::get_form_by_slug($form_slug);
+    
+    if (!$form) {
+        wp_send_json_error('Form not found');
     }
-
-    // Send to User with error handling
-    $subject_user = "🌸 Thank you for booking with Soulara at Soul Suite Wellness";
-    $body_user = "Hi $name,\n\nThank you for booking your Soulful Strategy Call with Soulara.\nWe're honored to walk this path of wellness with you.\n\nWith love,\nSoul Suite Wellness";
-    $user_email_sent = wp_mail($email, $subject_user, $body_user);
     
-    if (!$user_email_sent) {
-      error_log('Failed to send confirmation email to user: ' . $email);
-    }
-
-    // Send emails to additional attendees (business clients only)
-    $attendee_emails_sent = 0;
-    $attendee_email_errors = 0;
+    $config = $form->form_config;
+    $submission_data = array();
     
-    if ($type === 'business' && !empty($valid_attendees)) {
-      foreach ($valid_attendees as $attendee) {
-        $attendee_subject = "🌸 You're invited to a Soul Suite Wellness Strategy Call";
-        $attendee_body = "Hi " . $attendee['name'] . ",\n\n";
-        $attendee_body .= "You've been invited by " . $name;
-        if (!empty($company)) {
-          $attendee_body .= " from " . $company;
-        }
-        $attendee_body .= " to join a Business Strategy Call with Soul Suite Wellness.\n\n";
-        $attendee_body .= "This call will focus on wellness strategies for your team and organization.\n\n";
-        $attendee_body .= "Meeting Details:\n";
-        $attendee_body .= "- Organized by: " . $name . " (" . $email . ")\n";
-        if (!empty($company)) {
-          $attendee_body .= "- Company: " . $company . "\n";
-        }
-        $attendee_body .= "- Meeting type: Business Strategy Call\n";
-        $attendee_body .= "- Duration: 30 minutes\n\n";
-        $attendee_body .= "The meeting organizer will book the appointment time and send you the calendar invite with the meeting link.\n\n";
-        $attendee_body .= "We look forward to supporting your team's wellness journey!\n\n";
-        $attendee_body .= "With gratitude,\n";
-        $attendee_body .= "Soul Suite Wellness Team\n";
-        $attendee_body .= "bewell@soulsuitewellness.com";
-
-        $attendee_email_result = wp_mail($attendee['email'], $attendee_subject, $attendee_body);
+    // Collect and sanitize form data
+    foreach ($config['fields'] as $field) {
+        $value = $_POST[$field['name']] ?? '';
         
-        if ($attendee_email_result) {
-          $attendee_emails_sent++;
-        } else {
-          $attendee_email_errors++;
-          error_log('Failed to send attendee notification to: ' . $attendee['email'] . ' for lead: ' . $name);
+        // Sanitize based on field type
+        switch ($field['type']) {
+            case 'email':
+                $value = sanitize_email($value);
+                break;
+            case 'textarea':
+                $value = sanitize_textarea_field($value);
+                break;
+            default:
+                if (is_array($value)) {
+                    $value = array_map('sanitize_text_field', $value);
+                } else {
+                    $value = sanitize_text_field($value);
+                }
         }
-      }
-    }
-
-    // Store success message in session
-    if (!session_id()) {
-      session_start();
+        
+        $submission_data[$field['name']] = $value;
+        
+        // Validate required fields
+        if (!empty($field['required']) && empty($value)) {
+            wp_send_json_error($field['label'] . ' is required.');
+        }
     }
     
-    if ($admin_email_sent && $user_email_sent) {
-      if ($type === 'business' && !empty($valid_attendees)) {
-        if ($attendee_emails_sent > 0) {
-          $_SESSION['form_success'] = "Thank you for booking with Soulara at Soul Suite Wellness. You and your team members ($attendee_emails_sent additional attendees) will receive confirmation emails shortly.";
-        } else {
-          $_SESSION['form_success'] = "Thank you for booking with Soulara at Soul Suite Wellness. You will receive a confirmation email shortly. Note: We couldn't send emails to additional attendees - please forward the booking details to them.";
-        }
-      } else {
-        $_SESSION['form_success'] = 'Thank you for booking with Soulara at Soul Suite Wellness. You will receive a confirmation email shortly.';
-      }
-    } else {
-      $_SESSION['form_success'] = 'Thank you for booking with Soulara at Soul Suite Wellness. If you don\'t receive a confirmation email, please contact us directly.';
+    // Save submission
+    $submission_id = Soul_Suite_Form_Builder::save_submission($form->id, $submission_data);
+    
+    if (!$submission_id) {
+        wp_send_json_error('Failed to save submission.');
     }
+    
+    // Send email notification if enabled
+    if (!empty($config['settings']['sendEmail'])) {
+        $to = $config['settings']['emailTo'] ?? get_option('admin_email');
+        $subject = 'New Form Submission: ' . $form->form_name;
+        $message = "New submission received:\n\n";
+        
+        foreach ($submission_data as $key => $value) {
+            if (is_array($value)) {
+                $value = implode(', ', $value);
+            }
+            $message .= ucwords(str_replace('_', ' ', $key)) . ": " . $value . "\n";
+        }
+        
+        wp_mail($to, $subject, $message);
+    }
+    
+    wp_send_json_success(array(
+        'message' => $config['settings']['successMessage'] ?? 'Thank you for your submission!',
+        'redirect' => $config['settings']['redirectUrl'] ?? '',
+    ));
+}
+add_action('wp_ajax_soul_suite_submit_form', 'soul_suite_handle_form_submission');
+add_action('wp_ajax_nopriv_soul_suite_submit_form', 'soul_suite_handle_form_submission');
 
-    // Use WordPress redirect function instead of JavaScript
-    wp_redirect($redirect_url);
-    exit;
-  }
+// =============================
+// Content Filters
+// =============================
+function soul_suite_excerpt_length($length) {
+    return 30;
+}
+add_filter('excerpt_length', 'soul_suite_excerpt_length', 999);
+
+function soul_suite_excerpt_more($more) {
+    return '...';
+}
+add_filter('excerpt_more', 'soul_suite_excerpt_more');
+
+// =============================
+// Body Classes
+// =============================
+function soul_suite_body_classes($classes) {
+    if (is_singular()) {
+        $classes[] = 'single-page';
+    }
+    
+    if (is_active_sidebar('sidebar-1')) {
+        $classes[] = 'has-sidebar';
+    } else {
+        $classes[] = 'no-sidebar';
+    }
+    
+    return $classes;
+}
+add_filter('body_class', 'soul_suite_body_classes');
+
+// =============================
+// Comments
+// =============================
+function soul_suite_comments($comment, $args, $depth) {
+    $GLOBALS['comment'] = $comment;
+    ?>
+    <li <?php comment_class(); ?> id="comment-<?php comment_ID(); ?>">
+        <div class="single_comment">
+            <div class="media">
+                <div class="comment_avatar">
+                    <?php echo get_avatar($comment, 70); ?>
+                </div>
+                <div class="media-body text-left comment_single">
+                    <h5 class="media-heading">
+                        <?php comment_author_link(); ?> 
+                        <span><?php echo ' - ' . get_comment_date('F j, Y') . ' ' . get_comment_date('g:i a'); ?></span>
+                        <div class="creply_link">
+                            <?php comment_reply_link(array_merge($args, array('depth' => $depth, 'max_depth' => $args['max_depth']))); ?>
+                        </div>
+                    </h5>
+                    <?php if ($comment->comment_approved == '0'): ?>
+                        <p><em><?php _e('Your comment is awaiting moderation.', 'soul-suite'); ?></em></p>
+                    <?php endif; ?>
+                    <?php comment_text(); ?>
+                </div>
+            </div>
+        </div>
+    </li>
+    <?php
+}
+
+// Comment form customization
+function soul_suite_comment_form_defaults($defaults) {
+    $defaults['comment_notes_after'] = '';
+    $defaults['comment_notes_before'] = '';
+    $defaults['title_reply'] = __('Write your comment here', 'soul-suite');
+    $defaults['comment_field'] = '<div class="row"><div class="form-group col-md-12"><textarea id="comment" class="comment_field form-control" name="comment" cols="77" rows="3" placeholder="' . esc_attr__('Write your Comment', 'soul-suite') . '" aria-required="true"></textarea></div></div>';
+    return $defaults;
+}
+add_filter('comment_form_defaults', 'soul_suite_comment_form_defaults');
+
+function soul_suite_comment_form_fields($fields) {
+    $commenter = wp_get_current_commenter();
+    $req = get_option('require_name_email');
+    
+    $fields['author'] = '<div class="row"><div class="form-group col-md-4"><input type="text" name="author" id="author" value="' . esc_attr($commenter['comment_author']) . '" placeholder="' . esc_attr__('Your Name *', 'soul-suite') . '" size="22" tabindex="1"' . ($req ? ' aria-required="true"' : '') . ' class="input-name form-control" /></div>';
+    
+    $fields['email'] = '<div class="form-group col-md-4"><input type="text" name="email" id="email" value="' . esc_attr($commenter['comment_author_email']) . '" placeholder="' . esc_attr__('Your Email *', 'soul-suite') . '" size="22" tabindex="2"' . ($req ? ' aria-required="true"' : '') . ' class="input-email form-control" /></div>';
+    
+    $fields['url'] = '<div class="form-group col-md-4"><input type="text" name="url" id="url" value="' . esc_attr($commenter['comment_author_url']) . '" placeholder="' . esc_attr__('Website', 'soul-suite') . '" size="22" tabindex="3" class="input-url form-control" /></div></div>';
+    
+    return $fields;
+}
+add_filter('comment_form_default_fields', 'soul_suite_comment_form_fields');
+
+
+/**
+ * Custom Contact Form (No Plugin)
+ */
+function soul_suite_contact_form() {
+    ob_start();
+    ?>
+    <form id="soul-suite-contact-form" class="soul-contact-form" method="post" action="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
+        <div class="form-group">
+            <input type="text" name="contact_name" id="contact_name" placeholder="Your name" required>
+        </div>
+        <div class="form-group">
+            <input type="email" name="contact_email" id="contact_email" placeholder="Your email" required>
+        </div>
+        <div class="form-group">
+            <input type="text" name="contact_subject" id="contact_subject" placeholder="Subject" required>
+        </div>
+        <div class="form-group">
+            <textarea name="contact_message" id="contact_message" rows="5" placeholder="Your message (optional)"></textarea>
+        </div>
+        <?php wp_nonce_field('soul_suite_contact_form', 'contact_nonce'); ?>
+        <input type="hidden" name="action" value="soul_suite_submit_contact">
+        <div class="form-group">
+            <button type="submit" class="hero-btn primary-btn">Send Message</button>
+        </div>
+        <div class="form-message"></div>
+    </form>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        $('#soul-suite-contact-form').on('submit', function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            var $btn = $form.find('button[type="submit"]');
+            var $msg = $form.find('.form-message');
+            
+            $btn.prop('disabled', true).text('Sending...');
+            $msg.html('');
+            
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'POST',
+                data: $form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $msg.html('<p class="success">' + response.data.message + '</p>');
+                        $form[0].reset();
+                    } else {
+                        $msg.html('<p class="error">' + response.data.message + '</p>');
+                    }
+                    $btn.prop('disabled', false).text('Send Message');
+                },
+                error: function() {
+                    $msg.html('<p class="error">Something went wrong. Please try again.</p>');
+                    $btn.prop('disabled', false').text('Send Message');
+                }
+            });
+        });
+    });
+    </script>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * Handle Contact Form Submission
+ */
+function soul_suite_handle_contact_form() {
+    // Verify nonce
+    if (!isset($_POST['contact_nonce']) || !wp_verify_nonce($_POST['contact_nonce'], 'soul_suite_contact_form')) {
+        wp_send_json_error(array('message' => 'Security check failed.'));
+    }
+    
+    // Sanitize inputs
+    $name = sanitize_text_field($_POST['contact_name']);
+    $email = sanitize_email($_POST['contact_email']);
+    $subject = sanitize_text_field($_POST['contact_subject']);
+    $message = sanitize_textarea_field($_POST['contact_message']);
+    
+    // Validate
+    if (empty($name) || empty($email) || empty($subject)) {
+        wp_send_json_error(array('message' => 'Please fill in all required fields.'));
+    }
+    
+    if (!is_email($email)) {
+        wp_send_json_error(array('message' => 'Please enter a valid email address.'));
+    }
+    
+    // Send email
+    $to = get_theme_mod('soul_suite_contact_email', 'bewell@soulsuitewellness.com');
+    $email_subject = 'Contact Form: ' . $subject;
+    $email_body = "Name: $name\nEmail: $email\n\nMessage:\n$message";
+    $headers = array('Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $email);
+    
+    $sent = wp_mail($to, $email_subject, $email_body, $headers);
+    
+    if ($sent) {
+        wp_send_json_success(array('message' => 'Thank you! Your message has been sent.'));
+    } else {
+        wp_send_json_error(array('message' => 'Failed to send message. Please try again.'));
+    }
+}
+add_action('wp_ajax_soul_suite_submit_contact', 'soul_suite_handle_contact_form');
+add_action('wp_ajax_nopriv_soul_suite_submit_contact', 'soul_suite_handle_contact_form');
+
+// =============================
+// Search Form
+// =============================
+function soul_suite_search_form($form) {
+    $form = '
+        <div class="form-group search-input">
+            <div class="search_form">
+                <form role="search" method="get" id="searchform" class="searchform" action="' . esc_url(home_url('/')) . '">
+                    <input type="text" value="' . esc_attr(get_search_query()) . '" name="s" id="s" class="form-control search_field" placeholder="' . esc_attr__('Search...', 'soul-suite') . '">
+                </form>
+            </div>
+        </div>
+    ';
+    return $form;
+}
+add_filter('get_search_form', 'soul_suite_search_form');
+
+// =============================
+// Helper Functions
+// =============================
+function soul_suite_kses($content) {
+    $allowed_tags = array(
+        'p' => array('class' => array()),
+        'span' => array('class' => array()),
+        'div' => array('class' => array()),
+        'strong' => array(),
+        'b' => array(),
+        'br' => array(),
+        'h1' => array('class' => array()),
+        'h2' => array('class' => array()),
+        'h3' => array('class' => array()),
+        'h4' => array('class' => array()),
+        'h5' => array('class' => array()),
+        'h6' => array('class' => array()),
+        'i' => array('class' => array()),
+        'ul' => array('class' => array(), 'id' => array()),
+        'ol' => array('class' => array(), 'id' => array()),
+        'li' => array('class' => array(), 'id' => array()),
+        'a' => array('href' => array(), 'target' => array(), 'class' => array()),
+        'img' => array('src' => array(), 'alt' => array(), 'class' => array()),
+    );
+    return wp_kses($content, $allowed_tags);
+}
+
+function soul_suite_main_menu() {
+    // Try legacy menu location first (menu-1), then fall back to primary
+    $menu_locations = get_nav_menu_locations();
+    $menu_location = 'primary';
+    
+    // Check if menu-1 (Primary Legacy) has a menu assigned
+    if (isset($menu_locations['menu-1']) && $menu_locations['menu-1'] > 0) {
+        $menu_location = 'menu-1';
+    }
+    
+    wp_nav_menu(array(
+        'theme_location' => $menu_location,
+        'depth' => 3,
+        'container' => false,
+        'menu_class' => 'nav navbar-nav',
+        'fallback_cb' => '__return_false',
+        'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+    ));
+}
+
+// =============================
+// Debug & Customizer Fixes
+// =============================
+// Debug: Check if template controller loaded
+add_action('admin_notices', function() {
+    if (class_exists('Soul_Suite_Template_Parts')) {
+        echo '<div class="notice notice-success is-dismissible"><p>✅ Template Controller Loaded!</p></div>';
+    } else {
+        echo '<div class="notice notice-error"><p>❌ Template Controller NOT Loaded</p></div>';
+    }
 });
 
-// Display form messages (add this to your theme if you want to show messages)
-add_action('wp_head', function() {
-  if (!session_id()) {
-    session_start();
-  }
-  
-  if (isset($_SESSION['form_errors'])) {
-    echo "<script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var messageDiv = document.getElementById('form-message');
-        if (messageDiv) {
-          messageDiv.style.display = 'block';
-          messageDiv.innerHTML = 'Error: " . implode('<br>', $_SESSION['form_errors']) . "';
-          messageDiv.style.color = 'red';
-        }
-      });
-    </script>";
-    unset($_SESSION['form_errors']);
-  }
-  
-  if (isset($_SESSION['form_success'])) {
-    echo "<script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var formDiv = document.getElementById('soulara-lead-form');
-        var messageDiv = document.getElementById('form-message');
-        if (formDiv) formDiv.style.display = 'none';
-        if (messageDiv) {
-          messageDiv.style.display = 'block';
-          messageDiv.innerHTML = '" . esc_js($_SESSION['form_success']) . "';
-          messageDiv.style.color = 'green';
-        }
-      });
-    </script>";
-    unset($_SESSION['form_success']);
-  }
-});
+// Ensure customizer runs after WordPress defaults
+// add_action('customize_register', 'soul_suite_customize_register', 11);
 
-/**
- * Implement the Custom Header feature.
- */
-require get_template_directory() . '/inc/custom-header.php';
-
-/**
- * Custom template tags for this theme.
- */
-require get_template_directory() . '/inc/template-tags.php';
-
-/**
- * Custom functions that act independently of the theme templates.
- */
-require get_template_directory() . '/inc/extras.php';
-
-/**
- * Customizer additions.
- */
-require get_template_directory() . '/inc/customizer.php';
-
-/**
- * Load Jetpack compatibility file.
- */
-require get_template_directory() . '/inc/jetpack.php';
-require get_template_directory() . '/inc/navwalker.php';
-require get_template_directory() . '/inc/custom-functions.php';
-require get_template_directory() . '/inc/class-tgm-plugin-activation.php';
-require get_template_directory() . '/inc/required-plugin.php';
-require get_template_directory() . '/inc/demo_install.php';
-
-/**
- * Load the Soulara Form Builder system
- */
-require_once get_template_directory() . '/inc/form-editor/init.php';
+// =============================
+// Cleanup WordPress Head
+// =============================
+remove_action('wp_head', 'wp_generator');
+remove_action('wp_head', 'wlwmanifest_link');
+remove_action('wp_head', 'rsd_link');

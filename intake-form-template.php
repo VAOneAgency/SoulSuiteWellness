@@ -1,154 +1,142 @@
 <?php
 /**
-Template Name: Intake Form
- *
- * Template for displaying the lead intake form page.
- *
- * @package Monalisa
+ * Template Name: Intake Form
+ * 
+ * Custom intake form template for Soul Suite Wellness
+ * 
+ * @package SoulSuite
  */
 
-// Process form submission
-$form_message = '';
-$form_status = '';
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['client_type'], $_POST['fullname'], $_POST['email'])) {
-    
-    // Basic validation
-    $errors = array();
-    
-    // Sanitize and validate required fields
-    $type = sanitize_text_field($_POST['client_type']);
-    $name = sanitize_text_field($_POST['fullname']);
-    $email = sanitize_email($_POST['email']);
-    
-    // Validate required fields
-    if (empty($name)) {
-        $errors[] = 'Full name is required.';
-    }
-    
-    if (empty($email) || !is_email($email)) {
-        $errors[] = 'Valid email address is required.';
-    }
-    
-    if (!in_array($type, ['individual', 'business'])) {
-        $errors[] = 'Invalid client type selected.';
-    }
-    
-    // If there are no validation errors, process the form
-    if (empty($errors)) {
-        $admin_email = 'bewell@soulsuitewellness.com';
-        $site_name = get_bloginfo('name');
+// Initialize variables
+$form_message = '';
+$form_success = false;
+$errors = array();
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['intake_form_submit'])) {
+    // Verify nonce
+    if (!isset($_POST['intake_form_nonce']) || !wp_verify_nonce($_POST['intake_form_nonce'], 'soul_suite_intake_form')) {
+        $errors[] = 'Security check failed. Please try again.';
+    } else {
+        // Sanitize and validate form data
+        $form_data = array();
         
-        // Prepare lead data for database
-        $lead_data = array(
-            'client_type' => $type,
-            'fullname' => $name,
-            'email' => $email,
-            'date_submitted' => current_time('mysql'),
-            'services' => isset($_POST['services']) ? array_map('sanitize_text_field', $_POST['services']) : array(),
-            'contact_method' => isset($_POST['contact_method']) ? sanitize_text_field($_POST['contact_method']) : ''
+        // Required fields
+        $required_fields = array(
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'email' => 'Email Address',
+            'phone' => 'Phone Number',
         );
         
-        // Add individual-specific fields
-        if ($type === 'individual') {
-            $lead_data['focus'] = isset($_POST['focus']) ? sanitize_textarea_field($_POST['focus']) : '';
-        }
-        
-        // Add business-specific fields
-        if ($type === 'business') {
-            $lead_data['company'] = isset($_POST['company']) ? sanitize_text_field($_POST['company']) : '';
-            $lead_data['goals'] = isset($_POST['goals']) ? sanitize_textarea_field($_POST['goals']) : '';
-            $lead_data['team_size'] = isset($_POST['team_size']) ? intval($_POST['team_size']) : 0;
-            
-            // Process attendee information
-            $attendees = array();
-            if (!empty($_POST['attendees']) && is_array($_POST['attendees'])) {
-                foreach ($_POST['attendees'] as $i => $attendee) {
-                    if (is_array($attendee) && !empty($attendee['name']) && !empty($attendee['email'])) {
-                        $attendees[] = array(
-                            'name' => sanitize_text_field($attendee['name']),
-                            'email' => sanitize_email($attendee['email'])
-                        );
+        foreach ($required_fields as $field => $label) {
+            if (empty($_POST[$field])) {
+                $errors[] = $label . ' is required.';
+            } else {
+                if ($field === 'email') {
+                    $form_data[$field] = sanitize_email($_POST[$field]);
+                    if (!is_email($form_data[$field])) {
+                        $errors[] = 'Please enter a valid email address.';
                     }
+                } else {
+                    $form_data[$field] = sanitize_text_field($_POST[$field]);
                 }
             }
-            $lead_data['attendees'] = $attendees;
         }
         
-        // Store lead in database using WordPress custom table or options
-        // For simplicity, we'll use transients for now - in a real implementation, you'd use a custom table
-        $leads = get_option('soulara_intake_leads', array());
-        $leads[] = $lead_data;
-        update_option('soulara_intake_leads', $leads);
+        // Optional fields
+        $optional_fields = array(
+            'company',
+            'title',
+            'service_interest',
+            'message',
+        );
         
-        // Prepare email content
-        $email_subject = "New Lead: {$name} - {$type} Client";
-        
-        $email_body = "New lead submission from {$site_name}\n\n";
-        $email_body .= "Client Type: " . ucfirst($type) . "\n";
-        $email_body .= "Full Name: {$name}\n";
-        $email_body .= "Email: {$email}\n\n";
-        
-        // Add services
-        if (!empty($lead_data['services'])) {
-            $email_body .= "Interested Services: \n";
-            foreach ($lead_data['services'] as $service) {
-                $email_body .= "- " . ucfirst(str_replace('-', ' ', $service)) . "\n";
+        foreach ($optional_fields as $field) {
+            if (isset($_POST[$field]) && !empty($_POST[$field])) {
+                if ($field === 'message') {
+                    $form_data[$field] = sanitize_textarea_field($_POST[$field]);
+                } else {
+                    $form_data[$field] = sanitize_text_field($_POST[$field]);
+                }
             }
-            $email_body .= "\n";
         }
         
-        // Add contact preference
-        $email_body .= "Preferred Contact Method: " . ucfirst($lead_data['contact_method']) . "\n\n";
-        
-        if ($type === 'individual') {
-            if (!empty($lead_data['focus'])) {
-                $email_body .= "Focus/Concern: {$lead_data['focus']}\n\n";
-            }
-        } else {
-            $email_body .= "Company: {$lead_data['company']}\n";
-            if (!empty($lead_data['goals'])) {
-                $email_body .= "Goals: {$lead_data['goals']}\n";
-            }
-            $email_body .= "Team Size: {$lead_data['team_size']}\n\n";
+        // If no errors, process the form
+        if (empty($errors)) {
+            // Save to database
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'soul_suite_form_submissions';
             
-            if (!empty($attendees)) {
-                $email_body .= "Additional Attendees:\n";
-                foreach ($attendees as $attendee) {
-                    $email_body .= "- {$attendee['name']} ({$attendee['email']})\n";
+            $result = $wpdb->insert(
+                $table_name,
+                array(
+                    'form_id' => 0, // Intake form ID
+                    'submission_data' => wp_json_encode($form_data),
+                    'submitted_at' => current_time('mysql'),
+                    'ip_address' => $_SERVER['REMOTE_ADDR'],
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+                ),
+                array('%d', '%s', '%s', '%s', '%s')
+            );
+            
+            if ($result) {
+                // Send email notification
+                $to = get_option('soul_suite_contact_email', 'bewell@soulsuitewellness.com');
+                $subject = 'New Intake Form Submission - ' . $form_data['first_name'] . ' ' . $form_data['last_name'];
+                $message = "New intake form submission received:\n\n";
+                
+                foreach ($form_data as $key => $value) {
+                    $label = ucwords(str_replace('_', ' ', $key));
+                    $message .= $label . ": " . $value . "\n";
                 }
+                
+                $message .= "\nSubmitted: " . current_time('mysql');
+                
+                wp_mail($to, $subject, $message);
+                
+                $form_success = true;
+                $form_message = '<div class="alert alert-success"><strong>Thank you!</strong> Your intake form has been submitted successfully. We\'ll be in touch soon.</div>';
+            } else {
+                $errors[] = 'There was an error submitting your form. Please try again.';
             }
         }
-        
-        // Send notification email to admin
-        $headers = array('Content-Type: text/plain; charset=UTF-8');
-        wp_mail($admin_email, $email_subject, $email_body, $headers);
-        
-        // Set success message and redirect to Square booking
-        $form_status = 'success';
-        $form_message = 'Thank you! Your information has been received. Redirecting to booking calendar...';
-        
-        // Determine redirect URL based on client type
-        if ($type === 'individual') {
-            $redirect_url = 'https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/GJZY3CEHIIJR6XSGCXQR6D6P';
-        } else {
-            $redirect_url = 'https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/HWYWQ6UMI4Q34K3TM27C7EU4';
-        }
-        
-    } else {
-        // Set error message
-        $form_status = 'error';
-        $form_message = '<strong>Please correct the following errors:</strong><ul>';
+    }
+    
+    // Build error message
+    if (!empty($errors)) {
+        $form_message = '<div class="alert alert-danger">';
+        $form_message .= '<strong>Please correct the following errors:</strong><ul>';
         foreach ($errors as $error) {
             $form_message .= '<li>' . esc_html($error) . '</li>';
         }
-        $form_message .= '</ul>';
+        $form_message .= '</ul></div>';
     }
 }
 
 get_header();
-monalisa_single_banner();
+
+// Page Header (replaces soul_suite_single_banner())
+$header_bg_color = get_option('soul_suite_hero_bg_color', '#40e0d0');
 ?>
+
+<div class="page-header intake-form-header" style="background: linear-gradient(135deg, <?php echo esc_attr($header_bg_color); ?>, #ff5b0c); padding: 80px 0; text-align: center; margin-bottom: 60px;">
+    <div class="container">
+        <h1 style="color: white; font-size: 2.5rem; margin: 0 0 15px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+            <?php the_title(); ?>
+        </h1>
+        <?php if (has_excerpt()): ?>
+            <p style="color: rgba(255,255,255,0.95); font-size: 1.2rem; margin: 0; max-width: 800px; margin: 0 auto;">
+                <?php the_excerpt(); ?>
+            </p>
+        <?php endif; ?>
+    </div>
+</div>
 
 <div id="primary" class="content-area">
     <div id="main" class="site-main">
@@ -158,402 +146,176 @@ monalisa_single_banner();
                     <?php
                     while (have_posts()) : the_post();
                         // Display the page content before the form (if any)
-                        the_content();
+                        if (get_the_content()) {
+                            ?>
+                            <div class="page-content">
+                                <?php the_content(); ?>
+                            </div>
+                            <?php
+                        }
                     endwhile;
                     ?>
-
-                    <form id="soulara-lead-form" method="POST">
-                        <div class="form-field">
-                            <label>Are you booking as a...</label>
-                            <select name="client_type" id="client_type" required>
-                                <option value="">Select one</option>
-                                <option value="individual">Individual</option>
-                                <option value="business">Business</option>
-                            </select>
-                        </div>
-
-                        <div class="form-field">
-                            <label for="fullname">Full Name</label>
-                            <input type="text" name="fullname" id="fullname" required>
-                        </div>
-
-                        <div class="form-field">
-                            <label for="email">Email Address</label>
-                            <input type="email" name="email" id="email" required>
-                        </div>
-
-                        <div class="form-field">
-                            <label>What services are you interested in? (Check all that apply)</label>
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="services[]" value="wellness-coaching"> Wellness Coaching
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="services[]" value="meditation"> Meditation Sessions
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="services[]" value="corporate-wellness"> Corporate Wellness Programs
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="services[]" value="stress-management"> Stress Management
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="services[]" value="mindfulness"> Mindfulness Training
-                                </label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="services[]" value="other"> Other
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="form-field">
-                            <label>Preferred Contact Method for 30-minute Strategy Call</label>
-                            <div class="radio-group">
-                                <label class="radio-label">
-                                    <input type="radio" name="contact_method" value="phone" required> Phone
-                                </label>
-                                <label class="radio-label">
-                                    <input type="radio" name="contact_method" value="zoom" required> Zoom
-                                </label>
-                            </div>
-                        </div>
-
-                        <div id="individual-fields" style="display:none;">
-                            <div class="form-field">
-                                <label for="focus">What's your primary area of concern or intention?</label>
-                                <textarea name="focus" id="focus" rows="3"></textarea>
-                            </div>
-                        </div>
-
-                        <div id="business-fields" style="display:none;">
-                            <div class="form-field">
-                                <label for="company">Business/Organization Name</label>
-                                <input type="text" name="company" id="company">
-                            </div>
-
-                            <div class="form-field">
-                                <label for="goals">What are your team or wellness goals?</label>
-                                <textarea name="goals" id="goals" rows="3"></textarea>
-                            </div>
-
-                            <div class="form-field">
-                                <label for="team_size">How many team members need support?</label>
-                                <input type="number" name="team_size" id="team_size" min="1">
-                            </div>
-
-                            <div class="form-disclaimer">
-                                <strong>Note:</strong> This first call allows up to <strong>3 total attendees</strong>. If more than one person from your team is joining, you may list them below. This strategy call is designed to assess your team's needs and set up next steps for full training and support.
-                            </div>
-
-                            <div id="attendee-repeater">
-                                <div class="attendee-group">
-                                    <label>Additional Attendee 1</label>
-                                    <input type="text" name="attendees[0][name]" placeholder="Name">
-                                    <input type="email" name="attendees[0][email]" placeholder="Email">
-                                </div>
-                                <div class="attendee-group">
-                                    <label>Additional Attendee 2</label>
-                                    <input type="text" name="attendees[1][name]" placeholder="Name">
-                                    <input type="email" name="attendees[1][email]" placeholder="Email">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- New booking notice -->
-                        <div class="booking-notice">
-                            <strong>📅 Next Step:</strong> After submitting this form, you'll be redirected to select your preferred date and time from available slots on our booking calendar.
-                        </div>
-
-                        <button type="submit">Submit & Continue to Booking</button>
-                    </form>
-
-                    <div id="form-message" style="<?php echo !empty($form_message) ? 'display:block;' : 'display:none;'; ?>" class="<?php echo $form_status; ?>">
+                    
+                    <?php if ($form_success): ?>
                         <?php echo $form_message; ?>
-                    </div>
-
-                    <!-- JavaScript Notice Modal -->
-                    <div id="booking-notice-modal" class="modal-overlay" style="display:none;">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3>🎯 Strategy Call Added!</h3>
-                            </div>
-                            <div class="modal-body">
-                                <p><strong>Great!</strong> Your strategy call has been added to the cart.</p>
-                                <p><strong>Next step:</strong> You'll now be redirected to select your preferred date and time from available slots.</p>
-                                <div class="loading-spinner">
-                                    <div class="spinner"></div>
-                                    <p>Redirecting to booking calendar...</p>
-                                </div>
-                            </div>
+                        <div class="text-center" style="margin-top: 40px;">
+                            <a href="<?php echo esc_url(home_url('/')); ?>" class="btn btn-primary">Return to Home</a>
                         </div>
-                    </div>
+                    <?php else: ?>
+                        <?php if (!empty($form_message)): ?>
+                            <?php echo $form_message; ?>
+                        <?php endif; ?>
+                        
+                        <div class="intake-form-container" style="max-width: 800px; margin: 40px auto; padding: 40px; background: #f9f9f9; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                            <form method="post" action="" class="soul-suite-intake-form">
+                                <?php wp_nonce_field('soul_suite_intake_form', 'intake_form_nonce'); ?>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="first_name">First Name <span class="required">*</span></label>
+                                            <input type="text" class="form-control" id="first_name" name="first_name" value="<?php echo isset($_POST['first_name']) ? esc_attr($_POST['first_name']) : ''; ?>" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="last_name">Last Name <span class="required">*</span></label>
+                                            <input type="text" class="form-control" id="last_name" name="last_name" value="<?php echo isset($_POST['last_name']) ? esc_attr($_POST['last_name']) : ''; ?>" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="email">Email Address <span class="required">*</span></label>
+                                            <input type="email" class="form-control" id="email" name="email" value="<?php echo isset($_POST['email']) ? esc_attr($_POST['email']) : ''; ?>" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="phone">Phone Number <span class="required">*</span></label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" value="<?php echo isset($_POST['phone']) ? esc_attr($_POST['phone']) : ''; ?>" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="company">Company/Organization</label>
+                                            <input type="text" class="form-control" id="company" name="company" value="<?php echo isset($_POST['company']) ? esc_attr($_POST['company']) : ''; ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="title">Title/Position</label>
+                                            <input type="text" class="form-control" id="title" name="title" value="<?php echo isset($_POST['title']) ? esc_attr($_POST['title']) : ''; ?>">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="service_interest">Service Interest</label>
+                                    <select class="form-control" id="service_interest" name="service_interest">
+                                        <option value="">-- Select a Service --</option>
+                                        <option value="individual" <?php selected(isset($_POST['service_interest']) && $_POST['service_interest'] === 'individual'); ?>>Individual Strategy Call</option>
+                                        <option value="business" <?php selected(isset($_POST['service_interest']) && $_POST['service_interest'] === 'business'); ?>>Business Strategy Call</option>
+                                        <option value="virtual-reiki" <?php selected(isset($_POST['service_interest']) && $_POST['service_interest'] === 'virtual-reiki'); ?>>Virtual Reiki Session</option>
+                                        <option value="mobile-reiki" <?php selected(isset($_POST['service_interest']) && $_POST['service_interest'] === 'mobile-reiki'); ?>>Mobile Reiki Service</option>
+                                        <option value="other" <?php selected(isset($_POST['service_interest']) && $_POST['service_interest'] === 'other'); ?>>Other/Not Sure</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="message">How can we support you?</label>
+                                    <textarea class="form-control" id="message" name="message" rows="5"><?php echo isset($_POST['message']) ? esc_textarea($_POST['message']) : ''; ?></textarea>
+                                </div>
+                                
+                                <div class="form-group text-center" style="margin-top: 30px;">
+                                    <button type="submit" name="intake_form_submit" class="btn btn-primary btn-lg" style="padding: 15px 60px; font-size: 1.1rem;">
+                                        Submit Intake Form
+                                    </button>
+                                </div>
+                                
+                                <p class="text-center" style="margin-top: 20px; color: #777; font-size: 0.9rem;">
+                                    <span class="required">*</span> Required fields
+                                </p>
+                            </form>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
-</div><!-- #primary -->
+</div>
 
 <style>
-#soulara-lead-form {
-  background: #F3EEE9;
-  padding: 40px;
-  max-width: 640px;
-  margin: 40px auto;
-  border-radius: 16px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-  font-family: 'Lato', sans-serif;
-  border-left: 5px solid #D17953;
+.intake-form-container .form-control {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
 }
 
-.form-field {
-  margin-bottom: 24px;
+.intake-form-container .form-control:focus {
+    border-color: #40e0d0;
+    box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.1);
+    outline: none;
 }
 
-#soulara-lead-form label {
-  font-weight: 700;
-  font-size: 1rem;
-  color: #17786E;
-  display: block;
-  margin-bottom: 8px;
-  letter-spacing: 0.5px;
+.intake-form-container .form-group {
+    margin-bottom: 25px;
 }
 
-#soulara-lead-form input, 
-#soulara-lead-form select, 
-#soulara-lead-form textarea {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 8px;
-  border: 1px solid #999;
-  font-size: 1rem;
-  background-color: #fff;
-  color: #222;
-  font-family: 'Lato', sans-serif;
+.intake-form-container label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    display: block;
 }
 
-#soulara-lead-form textarea {
-  resize: vertical;
+.intake-form-container .required {
+    color: #ff5b0c;
 }
 
-.checkbox-group, .radio-group {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 5px;
+.intake-form-container .btn-primary {
+    background: linear-gradient(135deg, #40e0d0, #ff5b0c);
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.checkbox-label, .radio-label {
-  display: inline-flex !important;
-  align-items: center;
-  margin-right: 15px;
-  margin-bottom: 10px;
-  font-weight: normal;
-  color: #333;
-  width: calc(50% - 15px);
+.intake-form-container .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(64, 224, 208, 0.3);
 }
 
-.checkbox-label input, .radio-label input {
-  width: auto !important;
-  margin-right: 8px;
+.alert {
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
 }
 
-@media (max-width: 768px) {
-  .checkbox-label, .radio-label {
-    width: 100%;
-  }
+.alert-success {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
 }
 
-#soulara-lead-form button {
-  background: #D26138;
-  color: #fff;
-  border: none;
-  padding: 14px 32px;
-  border-radius: 50px;
-  font-weight: 700;
-  font-size: 1rem;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.alert-danger {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
 }
 
-#soulara-lead-form button:hover {
-  background: #BA5C38;
-}
-
-.attendee-group {
-  margin-bottom: 15px;
-}
-
-.attendee-group input {
-  margin-top: 6px;
-  margin-right: 10px;
-  width: calc(50% - 12px);
-  display: inline-block;
-}
-
-.form-disclaimer {
-  font-size: 0.95rem;
-  background: #FFF5E1;
-  padding: 15px 20px;
-  border-left: 5px solid #F4BB41;
-  border-radius: 8px;
-  color: #333;
-  margin-bottom: 20px;
-  line-height: 1.4;
-}
-
-/* New booking notice styling */
-.booking-notice {
-  background: #E8F4F8;
-  padding: 15px 20px;
-  border-left: 5px solid #17786E;
-  border-radius: 8px;
-  color: #333;
-  margin-bottom: 20px;
-  line-height: 1.4;
-  font-size: 0.95rem;
-}
-
-#form-message {
-  margin-top: 30px;
-  margin-bottom: 30px;
-  text-align: center;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-#form-message.success {
-  background-color: #e0f7f5;
-  color: #17786E;
-  border-left: 5px solid #1BC5AC;
-}
-
-#form-message.error {
-  background-color: #ffe9e9;
-  color: #d44950;
-  border-left: 5px solid #d44950;
-}
-
-#form-message.error ul {
-  text-align: left;
-  padding-left: 20px;
-}
-
-/* Modal styling */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.modal-content {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.modal-header h3 {
-  color: #17786E;
-  margin-bottom: 15px;
-  font-size: 1.3rem;
-}
-
-.modal-body p {
-  margin-bottom: 15px;
-  line-height: 1.5;
-  color: #333;
-}
-
-.loading-spinner {
-  margin-top: 20px;
-}
-
-.spinner {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #17786E;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 10px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-spinner p {
-  color: #666;
-  font-size: 0.9rem;
+.alert ul {
+    margin: 10px 0 0 20px;
 }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('client_type').addEventListener('change', function() {
-        const type = this.value;
-        document.getElementById('individual-fields').style.display = type === 'individual' ? 'block' : 'none';
-        document.getElementById('business-fields').style.display = type === 'business' ? 'block' : 'none';
-    });
-a
-    // Handle form submission with JavaScript notice
-    document.getElementById('soulara-lead-form').addEventListener('submit', function(e) {
-        // Let the form submit normally, but show notice if successful
-        <?php if($form_status === 'success' && isset($redirect_url)): ?>
-        e.preventDefault();
-        
-        // Show the modal notice
-        document.getElementById('booking-notice-modal').style.display = 'flex';
-        
-        // Redirect after 3 seconds
-        setTimeout(function() {
-            window.location.href = '<?php echo $redirect_url; ?>';
-        }, 3000);
-        <?php endif; ?>
-    });
-
-    // If there's a success message from PHP, show the modal and redirect
-    <?php if($form_status === 'success' && isset($redirect_url)): ?>
-    document.getElementById('booking-notice-modal').style.display = 'flex';
-    setTimeout(function() {
-        window.location.href = '<?php echo $redirect_url; ?>';
-    }, 3000);
-    <?php endif; ?>
-    
-    // Show appropriate fields based on pre-selected client type (for when form reloads with errors)
-    const clientType = document.getElementById('client_type').value;
-    if (clientType) {
-        document.getElementById('individual-fields').style.display = clientType === 'individual' ? 'block' : 'none';
-        document.getElementById('business-fields').style.display = clientType === 'business' ? 'block' : 'none';
-    }
-});
-</script>
-
-<?php
-get_footer();
+<?php get_footer(); ?>

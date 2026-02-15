@@ -4,11 +4,14 @@
  *
  * @link https://codex.wordpress.org/Creating_an_Error_404_Page
  *
- * @package Monalisa
+ * @package SoulSuite
  */
 
+// Include custom-functions.php
+require_once get_template_directory() . '/inc/custom-functions.php';
+
 get_header(); 
-monalisa_404_banner();
+soul_suite_404_banner();
 ?>
 
 
@@ -18,11 +21,11 @@ monalisa_404_banner();
 				<div class="col-sm-9 text-center center-block">
 					<section class="error-404 not-found">
 						<header class="page-header">
-							<h1 class="page-title"><?php esc_html_e( 'Oops! That page can&rsquo;t be found.', 'monalisa' ); ?></h1>
+							<h1 class="page-title"><?php esc_html_e( 'Oops! That page can&rsquo;t be found.', 'SoulSuite' ); ?></h1>
 						</header><!-- .page-header -->
 
 						<div class="page-content">
-							<p><?php esc_html_e( 'It looks like nothing was found at this location. Maybe try one of the links below or a search?', 'monalisa' ); ?></p>
+							<p><?php esc_html_e( 'It looks like nothing was found at this location. Maybe try one of the links below or a search?', 'SoulSuite' ); ?></p>
 
 							<div class="col-sm-5 center-block"><?php get_search_form(); ?></div>
 

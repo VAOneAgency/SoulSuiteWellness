@@ -8,33 +8,33 @@
  *
  * @link https://developer.wordpress.org/themes/functionality/custom-headers/
  *
- * @package Monalisa
+ * @package SoulSuite
  */
 
 /**
  * Set up the WordPress core custom header feature.
  *
- * @uses monalisa_header_style()
+ * @uses SoulSuite_header_style()
  */
-function monalisa_custom_header_setup() {
-	add_theme_support( 'custom-header', apply_filters( 'monalisa_custom_header_args', array(
+function SoulSuite_custom_header_setup() {
+	add_theme_support( 'custom-header', apply_filters( 'SoulSuite_custom_header_args', array(
 		'default-image'          => '',
 		'default-text-color'     => '000000',
 		'width'                  => 1000,
 		'height'                 => 250,
 		'flex-height'            => true,
-		'wp-head-callback'       => 'monalisa_header_style',
+		'wp-head-callback'       => 'SoulSuite_header_style',
 	) ) );
 }
-add_action( 'after_setup_theme', 'monalisa_custom_header_setup' );
+add_action( 'after_setup_theme', 'SoulSuite_custom_header_setup' );
 
-if ( ! function_exists( 'monalisa_header_style' ) ) :
+if ( ! function_exists( 'SoulSuite_header_style' ) ) :
 /**
  * Styles the header image and text displayed on the blog.
  *
- * @see monalisa_custom_header_setup().
+ * @see SoulSuite_custom_header_setup().
  */
-function monalisa_header_style() {
+function SoulSuite_header_style() {
 	$header_text_color = get_header_textcolor();
 
 	/*

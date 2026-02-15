@@ -1,42 +1,45 @@
 <?php
+/**
+ * Custom Functions
+ *
+ * @package SoulSuite
+ */
 
-function monalisa_banner_img_url(){
-	global $monalisa;
+function soul_suite_banner_img_url(){
+	global $SoulSuite;
 	
-	$monalisa_home_banner_img = '';	
+	$soul_suite_home_banner_img = ''; 
 	
-	if ( isset( $monalisa['monalisa_home_banner_img']['url']) ) {
-		$monalisa_home_banner_img = $monalisa['monalisa_home_banner_img']['url'];
+	if ( isset( $SoulSuite['SoulSuite_home_banner_img']['url']) ) {
+		$soul_suite_home_banner_img = $SoulSuite['SoulSuite_home_banner_img']['url'];
 	}
 	
-	$monalisa_upload_banner_image = get_post_meta(get_the_ID(), '_monalisa_upload_banner_image', true);
-	$monalisa_default_banner_img = get_template_directory_uri() . '/assets/img/bg/home-bg.jpg';
+	$soul_suite_upload_banner_image = get_post_meta(get_the_ID(), '_soul_suite_upload_banner_image', true);
+	$soul_suite_default_banner_img = get_template_directory_uri() . '/assets/img/bg/home-bg.jpg';
 
-		
-	
-	if($monalisa_upload_banner_image){
-		return $monalisa_upload_banner_image;
-	}elseif($monalisa_home_banner_img){
-		return $monalisa_home_banner_img;
+	if($soul_suite_upload_banner_image){
+		return $soul_suite_upload_banner_image;
+	}elseif($soul_suite_home_banner_img){
+		return $soul_suite_home_banner_img;
 	}else{
-		return $monalisa_default_banner_img;
+		return $soul_suite_default_banner_img;
 	}
 }
 
-function monalisa_blog_banner(){ 
+function soul_suite_blog_banner(){ 
 
 ?>
 
 	<!-- START  HOME DESIGN -->
-	<section class="section-top" style="background: url(<?php echo esc_url(monalisa_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">
+	<section class="section-top" style="background: url(<?php echo esc_url(soul_suite_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">
 		<div class="overlay">
 			<div class="container">
 				<div class="col-md-10 col-md-offset-1 col-xs-12 text-center">
 					<div class="section-top-title" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
-						<h2><?php esc_html_e('Blog' , 'monalisa');?></h2>
+						<h2><?php esc_html_e('Blog' , 'soul-suite');?></h2>
 						<ol class="breadcrumb">
-						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'monalisa');?></a></li>
-						  <li class="active"><?php esc_html_e('Blog' , 'monalisa');?></li>
+						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'soul-suite');?></a></li>
+						  <li class="active"><?php esc_html_e('Blog' , 'soul-suite');?></li>
 						</ol>
 					</div><!-- //.HERO-TEXT -->
 				</div><!--- END COL -->
@@ -47,20 +50,20 @@ function monalisa_blog_banner(){
 		
 <?php }
 
-function monalisa_shop_archive_banner(){ 
+function soul_suite_shop_archive_banner(){ 
 
 ?>
 
 	<!-- START  HOME DESIGN -->
-		<section class="section-top" style="background: url(<?php echo esc_url(monalisa_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">
+		<section class="section-top" style="background: url(<?php echo esc_url(soul_suite_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">
 		<div class="overlay">
 			<div class="container">
 				<div class="col-md-10 col-md-offset-1 col-xs-12 text-center">
 					<div class="section-top-title" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
-						<h2><?php esc_html_e('Shop' , 'monalisa');?></h2>
+						<h2><?php esc_html_e('Shop' , 'soul-suite');?></h2>
 						<ol class="breadcrumb">
-						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'monalisa');?></a></li>
-						  <li class="active"><?php esc_html_e('Shop' , 'monalisa');?></li>
+						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'soul-suite');?></a></li>
+						  <li class="active"><?php esc_html_e('Shop' , 'soul-suite');?></li>
 						</ol>
 					</div><!-- //.HERO-TEXT -->
 				</div><!--- END COL -->
@@ -71,18 +74,19 @@ function monalisa_shop_archive_banner(){
 		
 <?php }
 
-function monalisa_archive_banner(){ 
+function soul_suite_archive_banner(){ 
 
 ?>
 
 	<!-- START  HOME DESIGN -->
-	<section class="section-top" style="background: url(<?php echo esc_url(monalisa_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">
+	<section class="section-top" style="background: url(<?php echo esc_url(soul_suite_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">
 		<div class="overlay">
+			<div class="container">
 				<div class="col-md-10 col-md-offset-1 col-xs-12 text-center">
 					<div class="section-top-title" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
-						<h2><?php esc_html_e('Archive' , 'monalisa');?></h2>
+						<h2><?php esc_html_e('Archive' , 'soul-suite');?></h2>
 						<ol class="breadcrumb">
-						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'monalisa');?></a></li>
+						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'soul-suite');?></a></li>
 						  <li class="active"><?php the_archive_title();?></li>
 						</ol>
 					</div><!-- //.HERO-TEXT -->
@@ -94,20 +98,20 @@ function monalisa_archive_banner(){
 		
 <?php }
 
-function monalisa_search_banner(){ 
+function soul_suite_search_banner(){ 
 
 ?>
 
 	<!-- START  HOME DESIGN -->
-	<section class="section-top" style="background: url(<?php echo esc_url(monalisa_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">	
+	<section class="section-top" style="background: url(<?php echo esc_url(soul_suite_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">	
 		<div class="overlay">
 			<div class="container">
 				<div class="col-md-10 col-md-offset-1 col-xs-12 text-center">
 					<div class="section-top-title" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
-						<h2><?php esc_html_e('Search' , 'monalisa');?></h2>
+						<h2><?php esc_html_e('Search' , 'soul-suite');?></h2>
 						<ol class="breadcrumb">
-						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'monalisa');?></a></li>
-						  <li class="active"><?php printf( esc_html__( 'Search Results for: %s', 'monalisa' ), '<span>' . get_search_query() . '</span>' ); ?></li>
+						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'soul-suite');?></a></li>
+						  <li class="active"><?php printf( esc_html__( 'Search Results for: %s', 'soul-suite' ), '<span>' . get_search_query() . '</span>' ); ?></li>
 						</ol>
 					</div><!-- //.HERO-TEXT -->
 				</div><!--- END COL -->
@@ -118,19 +122,19 @@ function monalisa_search_banner(){
 		
 <?php }
 
-function monalisa_single_banner(){ 
+function soul_suite_single_banner(){ 
 
 ?>
 
 	<!-- START  HOME DESIGN -->
-	<section class="section-top" style="background: url(<?php echo esc_url(monalisa_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">	
+	<section class="section-top" style="background: url(<?php echo esc_url(soul_suite_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">	
 		<div class="overlay">
 			<div class="container">
 				<div class="col-md-10 col-md-offset-1 col-xs-12 text-center">
 					<div class="section-top-title" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
 						<h2><?php the_title();?></h2>
 						<ol class="breadcrumb">
-						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'monalisa');?></a></li>
+						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'soul-suite');?></a></li>
 						  <li class="active"><?php the_title();?></li>
 						</ol>
 					</div><!-- //.HERO-TEXT -->
@@ -142,20 +146,20 @@ function monalisa_single_banner(){
 		
 <?php }
 
-function monalisa_404_banner(){ 
+function soul_suite_404_banner(){ 
 
 ?>
 
 	<!-- START  HOME DESIGN -->
-	<section class="section-top" style="background: url(<?php echo esc_url(monalisa_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">
+	<section class="section-top" style="background: url(<?php echo esc_url(soul_suite_banner_img_url());?>)no-repeat;background-size:cover; background-position: center center;background-attachment:fixed">
 		<div class="overlay">
 			<div class="container">
 				<div class="col-md-10 col-md-offset-1 col-xs-12 text-center">
 					<div class="section-top-title" data-wow-duration="1s" data-wow-delay="0.3s" data-wow-offset="0">
-						<h2><?php esc_html_e('404' , 'monalisa');?></h2>
+						<h2><?php esc_html_e('404' , 'soul-suite');?></h2>
 						<ol class="breadcrumb">
-						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'monalisa');?></a></li>
-						  <li class="active"><?php esc_html_e('404' , 'monalisa');?></li>
+						  <li><a href="<?php echo esc_url(home_url('/'));?>"><?php esc_html_e('Home' , 'soul-suite');?></a></li>
+						  <li class="active"><?php esc_html_e('404' , 'soul-suite');?></li>
 						</ol>
 					</div><!-- //.HERO-TEXT -->
 				</div><!--- END COL -->
