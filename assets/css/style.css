@@ -1,6 +1,6 @@
 /*
-Author       : Syed Ekram.
-Template Name: Monalisa - Health & Beauti HTML Template
+Author       : VAOneAgency
+Template Name: Soul Suite Wellness - Health & Beauti HTML Template
 Version      : 1.0
 */
 /*=============================================================
@@ -2319,6 +2319,7 @@ main {
 
 /* Ensure content area has proper spacing */
 #content {
+  padding: 0px;
   min-height: calc(100vh - 400px);
   position: relative;
   overflow: visible;
