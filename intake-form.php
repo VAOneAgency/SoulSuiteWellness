@@ -218,7 +218,7 @@ get_header();
                             <div class="event-signup">
                                 <label class="checkbox-label">
                                     <input type="checkbox" name="event" value="yes" <?php echo (isset($_POST['event']) && $_POST['event'] === 'yes') ? 'checked' : ''; ?>>
-                                    Resilience Rx: Burnout Recovery Experience <strong>7/30/25 â€“ 6:30pm ET</strong>
+                                    Resilience Rx: Burnout Recovery Experience <strong>7/30/25 – 6:30pm ET</strong>
                                 </label>
                             </div>
                         </div>
@@ -237,7 +237,7 @@ get_header();
                     <?php if ($form_status === 'success' && isset($show_booking_type)): ?>
                     <!-- Calendly Booking Section -->
                     <div id="booking-section">
-                        <h3 class="booking-title">ðŸ“… Select Your Appointment Time</h3>
+                        <h3 class="booking-title">📅 Select Your Appointment Time</h3>
                         
                         <?php if ($show_booking_type === 'other'): ?>
                         <!-- General Inquiry Calendly -->
@@ -258,7 +258,7 @@ get_header();
                             <a href="<?php echo $show_booking_type === 'individual' ? 'https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/GJZY3CEHIIJR6XSGCXQR6D6P' : 'https://book.squareup.com/appointments/0ccyiu9cc0ezt1/location/09TR3SSB0EZ79/services/HWYWQ6UMI4Q34K3TM27C7EU4'; ?>" 
                                class="square-booking-btn" 
                                target="_blank">
-                                Book via Square Appointments â†’
+                                Book via Square Appointments →
                             </a>
                         </div>
                         <?php endif; ?>
@@ -345,7 +345,7 @@ get_header();
 }
 
 #soul-intake-form h3::after {
-    content: 'âœ¨';
+    content: '✨';
     font-family: 'Dancing Script', cursive;
     position: absolute;
     right: -30px;
@@ -438,7 +438,7 @@ get_header();
 }
 
 .event-signup::before {
-    content: 'ðŸŒŸ';
+    content: '🌟';
     position: absolute;
     top: 15px;
     right: 20px;
@@ -507,7 +507,7 @@ get_header();
 }
 
 #form-message.success::before {
-    content: 'âœ¨';
+    content: '✨';
     position: absolute;
     top: 20px;
     right: 25px;

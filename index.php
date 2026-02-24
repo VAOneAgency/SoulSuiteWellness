@@ -6,7 +6,7 @@
  */
 
 get_header();
-get_template_part('template-parts/page-top'); 
+get_template_part('template-parts/page-top'); // Add page banner
 
 $layout = get_theme_mod('soul_suite_blog_layout', 'classic');
 $bg_color = get_theme_mod('soul_suite_blog_bg_color', '#ffffff');

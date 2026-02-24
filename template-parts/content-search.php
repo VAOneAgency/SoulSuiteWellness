@@ -26,7 +26,7 @@
 		</div><!-- .entry-summary -->
 		
 		<div class="post_btn">	
-			<a class="btn btn-default btn-portfolio-bg" href="<?php the_permalink();?>"><?php esc_html_e('Read More..' , 'soul-suite');?> </a>
+			<a class="btn btn-default btn-portfolio-bg" href="<?php the_permalink();?>"><?php esc_html_e('Read More..' , 'monalisa');?> </a>
 		</div>		
 	</div>
 </article><!-- #post-## -->

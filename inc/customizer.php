@@ -1543,6 +1543,69 @@ $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'soul_s
     'label' => __('Button Hover Background', 'soul-suite'),
     'section' => 'soul_suite_about_section',
 )));
+
+// ========== ABOUT OWNER BUTTON CONTROLS ==========
+// (Add these after the existing about owner button settings)
+
+$wp_customize->add_setting('soul_suite_about_btn_font_size', array(
+    'default' => '16',
+    'sanitize_callback' => 'absint',
+));
+$wp_customize->add_control('soul_suite_about_btn_font_size', array(
+    'label' => __('Button Font Size (px)', 'soul-suite'),
+    'section' => 'soul_suite_about_section',
+    'type' => 'number',
+    'input_attrs' => array('min' => 12, 'max' => 24, 'step' => 1),
+));
+
+$wp_customize->add_setting('soul_suite_about_btn_padding', array(
+    'default' => '15px 40px',
+    'sanitize_callback' => 'sanitize_text_field',
+));
+$wp_customize->add_control('soul_suite_about_btn_padding', array(
+    'label' => __('Button Padding', 'soul-suite'),
+    'section' => 'soul_suite_about_section',
+    'type' => 'text',
+    'description' => __('CSS padding (e.g., 15px 40px)', 'soul-suite'),
+));
+
+$wp_customize->add_setting('soul_suite_about_btn_border_radius', array(
+    'default' => '50',
+    'sanitize_callback' => 'absint',
+));
+$wp_customize->add_control('soul_suite_about_btn_border_radius', array(
+    'label' => __('Button Border Radius (px)', 'soul-suite'),
+    'section' => 'soul_suite_about_section',
+    'type' => 'number',
+    'input_attrs' => array('min' => 0, 'max' => 100, 'step' => 1),
+));
+
+$wp_customize->add_setting('soul_suite_about_btn_font_weight', array(
+    'default' => '600',
+    'sanitize_callback' => 'sanitize_text_field',
+));
+$wp_customize->add_control('soul_suite_about_btn_font_weight', array(
+    'label' => __('Button Font Weight', 'soul-suite'),
+    'section' => 'soul_suite_about_section',
+    'type' => 'select',
+    'choices' => array(
+        '400' => 'Normal (400)',
+        '500' => 'Medium (500)',
+        '600' => 'Semi-Bold (600)',
+        '700' => 'Bold (700)',
+    ),
+));
+
+$wp_customize->add_setting('soul_suite_about_btn_letter_spacing', array(
+    'default' => '0',
+    'sanitize_callback' => 'sanitize_text_field',
+));
+$wp_customize->add_control('soul_suite_about_btn_letter_spacing', array(
+    'label' => __('Button Letter Spacing (px)', 'soul-suite'),
+    'section' => 'soul_suite_about_section',
+    'type' => 'number',
+    'input_attrs' => array('min' => -2, 'max' => 5, 'step' => 0.5),
+));
     
     /**
      * =============================
@@ -2179,7 +2242,7 @@ $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'soul_s
 
 /**
  * =============================
- * PAGE TOP SECTION (BANNER)
+ * PAGE TOP SECTION (BANNER) - COMPLETE CONTROLS
  * =============================
  */
 $wp_customize->add_section('soul_suite_page_top', array(
@@ -2188,7 +2251,7 @@ $wp_customize->add_section('soul_suite_page_top', array(
     'description' => __('Controls the banner section at the top of pages and posts', 'soul-suite'),
 ));
 
-// Default Background Image
+// ========== BACKGROUND SETTINGS ==========
 $wp_customize->add_setting('soul_suite_page_top_bg_image', array(
     'default' => get_template_directory_uri() . '/assets/img/bg/home-bg.jpg',
     'sanitize_callback' => 'esc_url_raw',
@@ -2199,7 +2262,15 @@ $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'soul_s
     'description' => __('Used when page has no featured image', 'soul-suite'),
 )));
 
-// Use Featured Image
+$wp_customize->add_setting('soul_suite_page_top_bg_color', array(
+    'default' => '#1a4d4d',
+    'sanitize_callback' => 'sanitize_hex_color',
+));
+$wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'soul_suite_page_top_bg_color', array(
+    'label' => __('Fallback Background Color', 'soul-suite'),
+    'section' => 'soul_suite_page_top',
+)));
+
 $wp_customize->add_setting('soul_suite_page_top_use_featured', array(
     'default' => true,
     'sanitize_callback' => 'rest_sanitize_boolean',
@@ -2208,10 +2279,10 @@ $wp_customize->add_control('soul_suite_page_top_use_featured', array(
     'label' => __('Use Featured Image as Background', 'soul-suite'),
     'section' => 'soul_suite_page_top',
     'type' => 'checkbox',
-    'description' => __('If enabled, page/post featured image will be used instead of default', 'soul-suite'),
+    'description' => __('If enabled, page/post featured image will override default', 'soul-suite'),
 ));
 
-// Overlay Settings
+// ========== OVERLAY SETTINGS ==========
 $wp_customize->add_setting('soul_suite_page_top_overlay_color', array(
     'default' => 'rgba(0,0,0,0.5)',
     'sanitize_callback' => 'sanitize_text_field',
@@ -2223,7 +2294,30 @@ $wp_customize->add_control('soul_suite_page_top_overlay_color', array(
     'description' => __('Use rgba format (e.g., rgba(0,0,0,0.5))', 'soul-suite'),
 ));
 
-// Title Color
+// ========== SECTION DIMENSIONS ==========
+$wp_customize->add_setting('soul_suite_page_top_height', array(
+    'default' => '350',
+    'sanitize_callback' => 'absint',
+));
+$wp_customize->add_control('soul_suite_page_top_height', array(
+    'label' => __('Section Height (px)', 'soul-suite'),
+    'section' => 'soul_suite_page_top',
+    'type' => 'number',
+    'input_attrs' => array('min' => 200, 'max' => 600, 'step' => 10),
+));
+
+$wp_customize->add_setting('soul_suite_page_top_padding', array(
+    'default' => '80px 20px',
+    'sanitize_callback' => 'sanitize_text_field',
+));
+$wp_customize->add_control('soul_suite_page_top_padding', array(
+    'label' => __('Section Padding', 'soul-suite'),
+    'section' => 'soul_suite_page_top',
+    'type' => 'text',
+    'description' => __('CSS padding (e.g., 80px 20px)', 'soul-suite'),
+));
+
+// ========== TITLE TYPOGRAPHY ==========
 $wp_customize->add_setting('soul_suite_page_top_title_color', array(
     'default' => '#ffffff',
     'sanitize_callback' => 'sanitize_hex_color',
@@ -2233,7 +2327,6 @@ $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'soul_s
     'section' => 'soul_suite_page_top',
 )));
 
-// Title Font Size
 $wp_customize->add_setting('soul_suite_page_top_title_size', array(
     'default' => '42',
     'sanitize_callback' => 'absint',
@@ -2245,7 +2338,35 @@ $wp_customize->add_control('soul_suite_page_top_title_size', array(
     'input_attrs' => array('min' => 24, 'max' => 72, 'step' => 1),
 ));
 
-// Breadcrumb Color
+$wp_customize->add_setting('soul_suite_page_top_title_weight', array(
+    'default' => '700',
+    'sanitize_callback' => 'sanitize_text_field',
+));
+$wp_customize->add_control('soul_suite_page_top_title_weight', array(
+    'label' => __('Title Font Weight', 'soul-suite'),
+    'section' => 'soul_suite_page_top',
+    'type' => 'select',
+    'choices' => array(
+        '400' => 'Normal (400)',
+        '500' => 'Medium (500)',
+        '600' => 'Semi-Bold (600)',
+        '700' => 'Bold (700)',
+        '800' => 'Extra Bold (800)',
+    ),
+));
+
+$wp_customize->add_setting('soul_suite_page_top_title_margin', array(
+    'default' => '0 0 20px 0',
+    'sanitize_callback' => 'sanitize_text_field',
+));
+$wp_customize->add_control('soul_suite_page_top_title_margin', array(
+    'label' => __('Title Margin', 'soul-suite'),
+    'section' => 'soul_suite_page_top',
+    'type' => 'text',
+    'description' => __('CSS margin (e.g., 0 0 20px 0)', 'soul-suite'),
+));
+
+// ========== BREADCRUMB SETTINGS ==========
 $wp_customize->add_setting('soul_suite_page_top_breadcrumb_color', array(
     'default' => '#ffffff',
     'sanitize_callback' => 'sanitize_hex_color',
@@ -2255,16 +2376,38 @@ $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'soul_s
     'section' => 'soul_suite_page_top',
 )));
 
-// Section Height
-$wp_customize->add_setting('soul_suite_page_top_height', array(
-    'default' => '350',
+$wp_customize->add_setting('soul_suite_page_top_breadcrumb_size', array(
+    'default' => '14',
     'sanitize_callback' => 'absint',
 ));
-$wp_customize->add_control('soul_suite_page_top_height', array(
-    'label' => __('Section Height (px)', 'soul-suite'),
+$wp_customize->add_control('soul_suite_page_top_breadcrumb_size', array(
+    'label' => __('Breadcrumb Font Size (px)', 'soul-suite'),
     'section' => 'soul_suite_page_top',
     'type' => 'number',
-    'input_attrs' => array('min' => 200, 'max' => 600, 'step' => 10),
+    'input_attrs' => array('min' => 12, 'max' => 20, 'step' => 1),
+));
+
+// ========== BORDER & EFFECTS ==========
+$wp_customize->add_setting('soul_suite_page_top_border_bottom', array(
+    'default' => '',
+    'sanitize_callback' => 'sanitize_text_field',
+));
+$wp_customize->add_control('soul_suite_page_top_border_bottom', array(
+    'label' => __('Bottom Border', 'soul-suite'),
+    'section' => 'soul_suite_page_top',
+    'type' => 'text',
+    'description' => __('CSS border (e.g., 5px solid #40e0d0) or leave empty', 'soul-suite'),
+));
+
+$wp_customize->add_setting('soul_suite_page_top_text_shadow', array(
+    'default' => '2px 2px 4px rgba(0,0,0,0.3)',
+    'sanitize_callback' => 'sanitize_text_field',
+));
+$wp_customize->add_control('soul_suite_page_top_text_shadow', array(
+    'label' => __('Text Shadow', 'soul-suite'),
+    'section' => 'soul_suite_page_top',
+    'type' => 'text',
+    'description' => __('CSS text-shadow or leave empty', 'soul-suite'),
 ));
 
     

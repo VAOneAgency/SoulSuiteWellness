@@ -142,6 +142,12 @@ blockquote {
     position: relative;
 }
 
+.page-header {
+    padding-bottom: 9px;
+    margin: 0px !important;
+    border-bottom: 1px solid #eee;
+}
+
 .services-section .section-title {
     text-align: center;
     margin-bottom: 60px;
@@ -284,17 +290,6 @@ About Owner Section
     letter-spacing: 2px;
 }
 
-.owner-content {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 60px;
-    align-items: start;
-    background: var(--color-white);
-    border-radius: var(--radius-lg);
-    padding: 40px;
-    box-shadow: var(--shadow-lg);
-}
-
 .owner-image {
     position: relative;
 }
@@ -357,14 +352,6 @@ About Owner Section
 .cta-section {
     margin-top: 30px;
     text-align: left;
-}
-
-.cta-section .hero-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px 35px;
-    font-size: 1.1rem;
 }
 
 .cta-section .hero-btn:hover {
@@ -787,7 +774,7 @@ Burnout / System Reset Section
 3.0 Layout
 --------------------------------------------------------------*/
 .container {
-	max-width: 1200px;
+	max-width: 1500px;
 	margin: 0 auto;
 	padding: 0 var(--spacing-lg);
 }
@@ -1263,8 +1250,6 @@ iframe {
 .site-branding img,
 .custom-logo-link img,
 .site-branding .custom-logo {
-	max-height: 125px;
-	max-width: 125px;
 	width: auto;
 	height: auto;
 	display: block;
@@ -1285,13 +1270,6 @@ iframe {
 .home .site-branding {
 	max-width: 250px;
 	margin: 0 auto;
-}
-
-.home .site-branding img,
-.home .custom-logo-link img,
-.home .site-branding .custom-logo {
-	max-height: 250px;
-	max-width: 250px;
 }
 
 .home .main-navigation {
@@ -1837,7 +1815,6 @@ iframe {
 	background: linear-gradient(135deg, #245C52 0%, #1a4439 100%);
 	color: var(--color-white);
 	padding: 60px 0 30px;
-	margin-top: 80px;
 	position: relative;
 }
 

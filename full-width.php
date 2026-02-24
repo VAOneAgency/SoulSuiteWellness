@@ -43,3 +43,4 @@ soul_suite_single_banner();
 <?php
 
 get_footer();
+

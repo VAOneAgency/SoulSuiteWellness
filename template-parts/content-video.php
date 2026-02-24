@@ -7,17 +7,17 @@
  * @package SoulSuite
  */
 
-$categories_list = get_the_category_list( esc_html__( ', ', 'soul-suite' ) );
-$tags_list = get_the_tag_list( '', esc_html__( ', ', 'soul-suite' ) );
-$soul_suite_embede_code = get_post_meta(get_the_ID(), '_soul_suite_embed_code', true);
+$categories_list = get_the_category_list( esc_html__( ', ', 'monalisa' ) );
+$tags_list = get_the_tag_list( '', esc_html__( ', ', 'monalisa' ) );
+$monalisa_embede_code = get_post_meta(get_the_ID(), '_monalisa_embed_code', true);
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<div class="single_post_blog">
 	
-		<?php if($soul_suite_embede_code){ ?>
+		<?php if($monalisa_embede_code){ ?>
 		<div class="embed-responsive embed-responsive-16by9 post_audio_video">
-			<?php echo wp_kses_post($soul_suite_embede_code); ?>
+			<?php echo monalisa_wp_kses($monalisa_embede_code); ?>
 		</div>
 		<?php } ?>
 		
@@ -34,8 +34,8 @@ $soul_suite_embede_code = get_post_meta(get_the_ID(), '_soul_suite_embed_code', 
 			<?php  endif; ?>
 		
 		<div class="entry_meta">
-			<i class="fa fa-calendar-o"></i> <?php echo esc_html(get_the_time('F d, Y'));?> &nbsp; <?php esc_html_e(' - ', 'soul-suite');?> &nbsp; <i class="fa fa-comments"></i> <?php comments_popup_link( '0 Comments', '1 Comment ', '% Comments ', 'comments-link', ' 0 Comments '); ?> &nbsp; <?php esc_html_e(' - ' , 'soul-suite'); if($categories_list){ ?>
-			&nbsp; <i class="fa fa-folder-o"></i> <?php echo wp_kses_post($categories_list); } ?> &nbsp; <?php if($tags_list){ esc_html_e(' - ' , 'soul-suite'); ?> &nbsp; <i class="fa fa-tag"></i> <?php echo wp_kses_post($tags_list); }?>
+			<i class="fa fa-calendar-o"></i> <?php echo esc_html(get_the_time('F d, Y'));?> &nbsp; <?php esc_html_e(' - ', 'monalisa');?> &nbsp; <i class="fa fa-comments"></i> <?php comments_popup_link( '0 Comments', '1 Comment ', '% Comments ', 'comments-link', ' 0 Comments '); ?> &nbsp; <?php esc_html_e(' - ' , 'monalisa'); if($categories_list){ ?>
+			&nbsp; <i class="fa fa-folder-o"></i> <?php echo monalisa_wp_kses($categories_list); } ?> &nbsp; <?php if($tags_list){ esc_html_e(' - ' , 'monalisa'); ?> &nbsp; <i class="fa fa-tag"></i> <?php echo monalisa_wp_kses($tags_list); }?>
 			
 		</div>
 		
@@ -49,11 +49,11 @@ $soul_suite_embede_code = get_post_meta(get_the_ID(), '_soul_suite_embed_code', 
 				
 			if(!is_single()){ ?>
 			<div class="post_btn">	
-				<a class="btn btn-default btn-portfolio-bg" href="<?php the_permalink();?>"><?php esc_html_e('Read More..' , 'soul-suite');?> </a>
+				<a class="btn btn-default btn-portfolio-bg" href="<?php the_permalink();?>"><?php esc_html_e('Read More..' , 'monalisa');?> </a>
 			</div>
 		<?php	}
 				wp_link_pages( array(
-					'before' => '<div class="page-links">' . esc_html__( 'Pages:', 'soul-suite' ),
+					'before' => '<div class="page-links">' . esc_html__( 'Pages:', 'monalisa' ),
 					'after'  => '</div>',
 				) );
 			?>
